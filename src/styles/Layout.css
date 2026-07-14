@@ -1,0 +1,7 @@
+.layout {
+    max-width: 1440px;
+    min-height: 100vh;
+    background-color: var(--color-page);
+    /* background-color: #eeeeee; */
+    color: rgb(246, 246, 246)
+}

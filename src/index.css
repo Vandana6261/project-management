@@ -1,0 +1,79 @@
+/* @import "tailwindcss"; */
+
+/* 
+:root {
+  --color-page: #000000;
+}
+
+.dark {
+  --color-page: #ffffff;
+}
+
+@theme {
+  --color-page: var(--color-page);
+} */
+
+
+/* :root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  
+}
+*/
+
+
+@import "tailwindcss";
+
+:root {
+  /* Core Structure Variables (Dark Theme) */
+  --color-page: #000000;
+  --color-card: #1f1f1f;
+  --color-cardBorder: rgba(255, 255, 255, 0.08);
+
+  /* Typography / Text Content */
+  --color-title: #ffffff;
+  --color-body: #a1a1aa; /* clean standard gray */
+
+  /* Pure Brand Identity Accents */
+  --color-primary: #07BAA5;
+  --color-secondary: #6366F1;
+}
+
+.light {
+  /* Core Structure Variables (Light Theme Transition) */
+  --color-page: #ffffff;
+  --color-card: #f8fafc;
+  --color-cardBorder: rgba(0, 0, 0, 0.08);
+
+  /* Typography / Text Content */
+  --color-title: #0f172a;
+  --color-body: #475569;
+
+  /* Brand remains identical for brand presence */
+  --color-primary: #07BAA5;
+  --color-secondary: #6366F1;
+}
+
+@theme {
+  /* Registers these clean, core variables into your Tailwind compiler */
+  --color-page: var(--color-page);
+  --color-card: var(--color-card);
+  --color-cardBorder: var(--color-cardBorder);
+  
+  --color-title: var(--color-title);
+  --color-body: var(--color-body);
+  
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+}
+
