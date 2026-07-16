@@ -53,3 +53,20 @@ export async function register(userData) {
     console.log(error.message);
   }
 }
+
+export async function login(userData) {
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
