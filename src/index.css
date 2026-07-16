@@ -1,37 +1,3 @@
-/* @import "tailwindcss"; */
-
-/* 
-:root {
-  --color-page: #000000;
-}
-
-.dark {
-  --color-page: #ffffff;
-}
-
-@theme {
-  --color-page: var(--color-page);
-} */
-
-
-/* :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  
-}
-*/
-
-
 @import "tailwindcss";
 
 :root {
@@ -39,29 +5,48 @@
   --color-page: #000000;
   --color-card: #1f1f1f;
   --color-cardBorder: rgba(255, 255, 255, 0.08);
+  
+  /* Input & Form Element Fields */
+  --color-inputBg: rgba(24, 24, 27, 0.6); /* matching zinc-900/60 */
+  --color-inputBorder: rgba(255, 255, 255, 0.1);
 
   /* Typography / Text Content */
   --color-title: #ffffff;
-  --color-body: #a1a1aa; /* clean standard gray */
+  --color-body: #a1a1aa; /* standard gray */
+  --color-muted: #a1a1aa; /* standard zinc-400 equivalent for typography */
+  --color-placeholder: #52525b; /* zinc-500 equivalent */
 
   /* Pure Brand Identity Accents */
   --color-primary: #07BAA5;
+  --color-primaryHover: #059887;
   --color-secondary: #6366F1;
+  --color-secondaryHover: #4f46e5;
+
+  --color-alert: #ff2222;
 }
 
 .light {
   /* Core Structure Variables (Light Theme Transition) */
-  --color-page: #ffffff;
-  --color-card: #f8fafc;
+  --color-page: #f2f8f7;
+  --color-card: #ffffff;
   --color-cardBorder: rgba(0, 0, 0, 0.08);
+  
+  /* Input & Form Element Fields */
+  --color-inputBg: rgba(241, 245, 249, 0.8); /* soft slate light fill */
+  --color-inputBorder: rgba(0, 0, 0, 0.08);
 
   /* Typography / Text Content */
   --color-title: #0f172a;
   --color-body: #475569;
+  --color-muted: #64748b; /* slate-500 matching label styles */
+  --color-placeholder: #94a3b8; /* clean light placeholder */
 
-  /* Brand remains identical for brand presence */
+  /* Brand remains identical for solid brand presence */
   --color-primary: #07BAA5;
+  --color-primaryHover: #059887;
   --color-secondary: #6366F1;
+  --color-secondaryHover: #4f46e5;
+  --color-alert: #fc0303;
 }
 
 @theme {
@@ -70,10 +55,18 @@
   --color-card: var(--color-card);
   --color-cardBorder: var(--color-cardBorder);
   
+  --color-inputBg: var(--color-inputBg);
+  --color-inputBorder: var(--color-inputBorder);
+  
   --color-title: var(--color-title);
   --color-body: var(--color-body);
+  --color-muted: var(--color-muted);
+  --color-placeholder: var(--color-placeholder);
   
   --color-primary: var(--color-primary);
+  --color-primaryHover: var(--color-primaryHover);
   --color-secondary: var(--color-secondary);
-}
+  --color-secondaryHover: var(--color-secondaryHover);
 
+  --color-alert: var(--color-alert);
+}
