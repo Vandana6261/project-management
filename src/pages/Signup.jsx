@@ -9,6 +9,9 @@ import {
 import { register, requestOtp, varifyOtp } from "../api/Auth";
 import { useNavigate } from "react-router-dom";
 
+const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*!]).{8,}$/;
+
 function Signup() {
   const initialForm = {
     email: "",
@@ -18,21 +21,31 @@ function Signup() {
     otp: "",
   };
 
-
   const [formData, setFormData] = useState(initialForm);
 
-  const [isEmailVarified, setIsEmailVarified] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState({});
   const [resError, setResError] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const navigate = useNavigate("/dashboard");
+  const navigate = useNavigate();
 
-  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-  const passwordRegex =
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,16}$/;
+  const validateForm = () => {
+    const errors = {};
+
+    if (!emailRegex.test(formData.email)) {
+      errors.email = "Please enter a valid email";
+    }
+
+    if (isEmailVerified && !passwordRegex.test(formData.password)) {
+      errors.password =
+        "Password must contain letters, numbers and special characters";
+    }
+
+    return errors;
+  };
 
   const handleChange = (e) => {
     setResError({});
@@ -41,68 +54,72 @@ function Signup() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleBlur = (e) => {
-    const err = {};
-    if (formData.email && !emailRegex.test(formData.email)) {
-      err.email = "Please give valid email";
-    }
-    if (formData.password && !passwordRegex.test(formData.password)) {
-      err.password = "Please enter strong password";
-    }
-
-    setError(err);
-    return;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
-    if (Object.entries(error).length > 0) {
+
+    const errors = validateForm();
+    if (Object.keys(errors).length) {
+      setError(errors);
       return;
     }
+
     setIsLoading(true);
     setResError({});
 
-    if (!otpSent && !isEmailVarified) {
-      const otpResponse = await requestOtp(formData.email);
-      setIsLoading(false);
-      if (!otpResponse.success) {
-        setResError({ message: otpResponse.message });
-        return;
-      }
-      setOtpSent(true);
-    } else if (!isEmailVarified && otpSent) {
-      const validationResponse = await varifyOtp({
-        email: formData.email,
-        otp: formData.otp,
-      });
-      setIsLoading(false);
-      if (!validationResponse.success) {
-        setResError({ message: validationResponse.message });
-        return;
-      }
-      setIsEmailVarified(true);
-      setOtpSent(true);
-    } else {
-      const user = {
-        email: formData.email,
-        username: formData.username,
-        fullName: formData.fullName,
-        password: formData.password,
-      };
-      const registerResponse = await register(user);
-      setIsLoading(false);
-      if (!registerResponse.success) {
-        setResError({ message: registerResponse.message });
-        return;
-      }
-      navigate("/dashboard");
-    }
+    try {
+      if (!otpSent && !isEmailVerified) {
+        const otpResponse = await requestOtp(formData.email);
 
-    setFormData(initialForm);
+        if (!otpResponse.success) {
+          setResError({ message: otpResponse.message });
+          return;
+        }
+
+        setOtpSent(true);
+      } else if (!isEmailVerified && otpSent) {
+        const validationResponse = await varifyOtp({
+          email: formData.email,
+          otp: formData.otp,
+        });
+
+        if (!validationResponse.success) {
+          setResError({ message: validationResponse.message });
+          return;
+        }
+
+        setIsEmailVerified(true);
+      } else {
+        const user = {
+          email: formData.email,
+          username: formData.username,
+          fullName: formData.fullName,
+          password: formData.password,
+        };
+
+        const registerResponse = await register(user);
+
+        if (!registerResponse.success) {
+          setResError({ message: registerResponse.message });
+          return;
+        }
+
+        setFormData(initialForm);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+
+      setResError({
+        message:
+          error?.message || "Something went wrong. Please try again later.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  console.log(resError)
+  console.log(resError);
 
   return (
     <form
@@ -110,7 +127,7 @@ function Signup() {
       onSubmit={(e) => handleSubmit(e)}
     >
       {/* Email Field */}
-      {!isEmailVarified && (
+      {!isEmailVerified && (
         <div className="flex flex-col gap-1">
           <label htmlFor="email" className={label}>
             Email Address
@@ -123,14 +140,13 @@ function Signup() {
             placeholder="name@company.com"
             className={inputBase}
             onChange={handleChange}
-            onBlur={handleBlur}
           />
           {error?.email && <p className="text-alert text-sm">{error.email}</p>}
         </div>
       )}
 
       {/* OTP Field */}
-      {otpSent && !isEmailVarified && (
+      {otpSent && !isEmailVerified && (
         <div className="flex flex-col animate-fadeIn">
           <label htmlFor="otp" className={label}>
             Verification Code
@@ -138,6 +154,8 @@ function Signup() {
           <input
             type="text"
             name="otp"
+            inputMode="numeric"
+            maxLength="6"
             value={formData.otp}
             id="otp"
             placeholder="Enter 6-digit OTP"
@@ -148,7 +166,7 @@ function Signup() {
       )}
 
       {/* Post-Verification Fields */}
-      {otpSent && isEmailVarified && (
+      {otpSent && isEmailVerified && (
         <div className="flex flex-col gap-4 animate-fadeIn">
           {/* Username */}
           <div className="flex flex-col">
@@ -196,7 +214,6 @@ function Signup() {
                 id="password"
                 placeholder="••••••••"
                 onChange={handleChange}
-                onBlur={handleBlur}
               />
               <button
                 type="button"
@@ -219,15 +236,15 @@ function Signup() {
 
       {/* Dynamic Action Button */}
       <button type="submit" className={submitButton} disabled={isLoading}>
-        {
-          isLoading ? <span>Progressing...</span> 
-          :
-          !isEmailVarified && !otpSent
-            ? "Request Security Code"
-            : otpSent && !isEmailVarified
-              ? "Verify Security Code"
-              : "Complete Registration"
-        }
+        {isLoading ? (
+          <span>Progressing...</span>
+        ) : !isEmailVerified && !otpSent ? (
+          "Request Security Code"
+        ) : otpSent && !isEmailVerified ? (
+          "Verify Security Code"
+        ) : (
+          "Complete Registration"
+        )}
       </button>
     </form>
   );
