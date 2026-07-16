@@ -8,6 +8,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './pages/Layout'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
+import { AuthProvider } from './context/AuthContext'
 
 function App() {
   
@@ -34,7 +35,9 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </>
   )
 }
