@@ -1,30 +1,9 @@
-// import React from 'react'
-// import { useNavigate } from 'react-router-dom'
-
-// function Navbar() {
-//     const navigate = useNavigate();
-//   return (
-//     <nav className='text-[#49bcb2] text-2xl font-bold'>
-//         <ul className='flex justify-around items-center'>
-//             <li onClick={() => navigate("/")} className='cursor-pointer'>Home</li>
-//             <li onClick={() => navigate("/auth")} className='cursor-pointer'>login</li>
-//         </ul>
-//     </nav>
-//   )
-// }
-
-// export default Navbar
-
-
-
-
-
-
-
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import useAuthContext from "../context/AuthContext";
 
 function Navbar() {
+  const { user } = useAuthContext();
   const [isThemeLight, setIsThemeLight] = useState(false);
 
   const toggleTheme = () => {
@@ -117,6 +96,10 @@ function Navbar() {
             >
               Get Started
             </Link>
+
+            <div>
+              <span>{user? user : "Login"}</span>
+            </div>
           </div>
 
         </div>
