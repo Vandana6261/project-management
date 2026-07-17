@@ -7,12 +7,12 @@ export const AuthProvider = ({children}) => {
 
     console.log("auth provider rendering")
     const [user, setUser] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [uLoading, setULoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect( ()=>{
         async function firstCall() {
-          setIsLoading(true)
+          setULoading(true)
           try {
             const isUser = await me();
             // console.log(isUser);
@@ -26,7 +26,7 @@ export const AuthProvider = ({children}) => {
           }
           finally
           {
-            setIsLoading(false)
+            setULoading(false)
           }
         }
         firstCall()
@@ -34,7 +34,7 @@ export const AuthProvider = ({children}) => {
 
 
     return (
-        <AuthContext.Provider value={{user, setUser, isLoading}}>
+        <AuthContext.Provider value={{user, setUser, uLoading}}>
             {children}
         </AuthContext.Provider>
     )
