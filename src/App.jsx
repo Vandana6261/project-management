@@ -33,7 +33,10 @@ function App() {
         },
         {
           path: "/dashboard",
-          element: <Dashboard/>
+          element: 
+            <ProtectedRoute>
+              <Dashboard/>
+            </ProtectedRoute>
         }
       ]
     }
