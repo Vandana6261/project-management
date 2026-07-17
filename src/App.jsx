@@ -42,7 +42,7 @@ function App() {
     }
   ])
  
-  if(isLoading) return <AppLoader />
+  if(uLoading) return <AppLoader />
   return <RouterProvider router={router} />
 }
 
