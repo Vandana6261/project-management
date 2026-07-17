@@ -8,6 +8,7 @@ import {
 } from "../styles/Auth";
 import { register, requestOtp, varifyOtp } from "../api/Auth";
 import { useNavigate } from "react-router-dom";
+import useAuthContext from "../context/AuthContext";
 
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*!]).{8,}$/;
@@ -21,6 +22,7 @@ function Signup() {
     otp: "",
   };
 
+  const {setUser} = useAuthContext();
   const [formData, setFormData] = useState(initialForm);
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -105,6 +107,7 @@ function Signup() {
         }
 
         setFormData(initialForm);
+        setUser(registerResponse.username);
         navigate("/dashboard");
       }
     } catch (error) {

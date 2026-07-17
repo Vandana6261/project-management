@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { inputBase, label, passWordInput, passWordInnerInput, submitButton } from "../styles/Auth";
 import { login } from "../api/Auth";
 import { useNavigate } from "react-router-dom";
+import useAuthContext from "../context/AuthContext";
 
 function Login() {
+  const {setUser} = useAuthContext();
+
   const [formData, setFormData] = useState({email: "", password: ""});
   const [showPassword, setShowPassword] = useState(false);
   const [resError, setResError] = useState({});
@@ -29,7 +32,8 @@ function Login() {
         setResError(loginRes.message);
         return;
       }
-       setFormData({email: "", password: ""});
+      setFormData({email: "", password: ""});
+      setUser(loginRes.username);
       navigate("/dashboard");
     } catch (error) {
       console.log(error)

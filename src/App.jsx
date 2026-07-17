@@ -10,13 +10,13 @@ import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import useAuthContext from './context/AuthContext'
 import { me } from './utils/user'
+import ProtectedRoute from './routes/ProtectedRoute'
+import AppLoader from './loaders/AppLoader'
 
 
 function App() {
 
-  const { setUser } = useAuthContext()
-  const [error, setError] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const { setUser, uLoading } = useAuthContext()
   
   const router = createBrowserRouter([
     {
@@ -38,28 +38,8 @@ function App() {
       ]
     }
   ])
-  
-  useEffect( ()=>{
-    async function firstCall() {
-      setIsLoading(true)
-      try {
-        const isUser = await me();
-        if(!isUser.success) {
-          setError(isUser.message);
-        }
-        console.log(isUser)
-        setUser(isUser.username);
-      } catch (error) {
-        console.log(error)
-      }
-      finally
-      {
-        setIsLoading(false)
-      }
-    }
-    firstCall()
-  },[])
-
+ 
+  if(isLoading) return <AppLoader />
   return <RouterProvider router={router} />
 }
 
