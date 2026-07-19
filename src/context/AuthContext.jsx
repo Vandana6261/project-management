@@ -15,11 +15,9 @@ export const AuthProvider = ({children}) => {
           setULoading(true)
           try {
             const isUser = await me();
-            // console.log(isUser);
             if(!isUser.success) {
               setError(isUser.message);
             }
-            console.log(isUser)
             setUser(isUser.username);
           } catch (error) {
             console.log(error)

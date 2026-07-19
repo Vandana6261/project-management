@@ -155,7 +155,7 @@ function Navbar() {
             </Link>
 
             <div>
-              <span>{user ? user : "Login"}</span>
+              <span className="text-primary">{user ? user : "Login"}</span>
             </div>
           </div>
         </div>
