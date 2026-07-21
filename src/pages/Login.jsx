@@ -96,7 +96,7 @@ function Login() {
 
       {/* Action Button */}
       <button type="submit" className={submitButton}>
-        Sign In to Account
+        {isLoading ? "Progressing..." : "Sign In to Account"}
       </button>
     </form>
   );
