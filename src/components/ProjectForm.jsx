@@ -1,46 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { getOptions } from "../api/projectApi";
-
-// function ProjectForm() {
-//   const [name, setName] = useState("")
-//   const [status, setStatus] = useState([]);
-//   const [priority, setPriority] = useState([]);
-
-//   useEffect(() => {
-//     async function fetchOptions() {
-//       try {
-//         const options = await getOptions();
-//         // console.log(options)
-//         setStatus(options.data.status);
-//         setPriority(options.data.priority);
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     }
-
-//     fetchOptions();
-//   }, []);
-
-
-//   return (
-//     <>
-//         <div>
-//             <form>
-
-//             </form>
-//         </div>
-//     </>
-//   )
-// }
-
-// export default ProjectForm;
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { createProject, getOptions } from "../api/projectApi";
 
@@ -116,7 +73,7 @@ function ProjectForm() {
     if (!validateForm()) return;
 
     const res = await createProject(formData);
-    console.log(res, "create response");
+    console.log(await res.json());
 
     // Clear form state context completely following successful operation execution
     setFormData({
