@@ -12,38 +12,46 @@ import useAuthContext from './context/AuthContext'
 import { me } from './utils/user'
 import ProtectedRoute from './routes/ProtectedRoute'
 import AppLoader from './loaders/AppLoader'
+import AppLayout from './components/AppLayout'
 
+
+
+const TasksPage = () => <div className="text-title font-bold text-xl">Tasks Workspace</div>;
+const ChatbotPage = () => <div className="text-title font-bold text-xl">AI Assistant Engine</div>;
+const NotificationsPage = () => <div className="text-title font-bold text-xl">Activity Notifications</div>;
 
 function App() {
+  const { uLoading } = useAuthContext();
 
-  const { setUser, uLoading } = useAuthContext()
-  
   const router = createBrowserRouter([
+    // Public Landing Routes
     {
       path: "/",
       element: <Layout />,
       children: [
-        {
-          index: true,
-          element: <Home />
-        },
-        {
-          path: "/auth",
-          element: <Auth />
-        },
-        {
-          path: "/dashboard",
-          element: 
-            <ProtectedRoute>
-              <Dashboard/>
-            </ProtectedRoute>
-        }
-      ]
-    }
-  ])
- 
-  if(uLoading) return <AppLoader />
-  return <RouterProvider router={router} />
+        { index: true, element: <Home /> },
+        { path: "auth", element: <Auth /> },
+      ],
+    },
+    // Protected Dashboard & Workspace Routes
+    {
+      path: "/",
+      element: (
+        <ProtectedRoute>
+          <AppLayout />
+        </ProtectedRoute>
+      ),
+      children: [
+        { path: "dashboard", element: <Dashboard /> },
+        { path: "tasks", element: <TasksPage /> },
+        { path: "chatbot", element: <ChatbotPage /> },
+        { path: "notifications", element: <NotificationsPage /> },
+      ],
+    },
+  ]);
+
+  if (uLoading) return <AppLoader />;
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
