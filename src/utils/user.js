@@ -1,10 +1,11 @@
 import { BASE_URL } from "../config";
-import { customFetch } from "./customFetch";
+import { cusApi } from "./customFetch";
 
 export async function me() {
     try {
-        const res = await customFetch(`${BASE_URL}/api/auth/me`, {method: "GET"});
-        return await res.json()
+        const res = await cusApi.get("auth/me");
+        const data = await res.json();
+        return data;
     } catch (error) {
         console.log(error)
     }   
