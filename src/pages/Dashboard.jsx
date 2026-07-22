@@ -18,7 +18,7 @@ function Dashboard() {
         const response = await cusApi.get('project/get-project')
         const data = await response.json();
         console.log(data);
-        setProjects(data);
+        setProjects(data.project);
       } catch (error) {
         console.log(error);
       }
@@ -55,7 +55,7 @@ function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Span (2 Columns) */}
         <div className="lg:col-span-2 space-y-8">
-          <ProjectList />
+          <ProjectList projects={projects} />
           <MyTasks />
         </div>
 
