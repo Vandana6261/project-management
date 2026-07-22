@@ -5,14 +5,14 @@ import heroImg from './assets/hero.png'
 // import './App.css'
 import Auth from './pages/Auth'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Layout from './pages/Layout'
+import Layout from './pages/layout/Layout'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import useAuthContext from './context/AuthContext'
 import { me } from './utils/user'
 import ProtectedRoute from './routes/ProtectedRoute'
 import AppLoader from './loaders/AppLoader'
-import AppLayout from './components/AppLayout'
+import AppLayout from './pages/layout/AppLayout'
 
 
 
@@ -42,10 +42,13 @@ function App() {
         </ProtectedRoute>
       ),
       children: [
-        { path: "dashboard", element: <Dashboard /> },
-        { path: "tasks", element: <TasksPage /> },
-        { path: "chatbot", element: <ChatbotPage /> },
-        { path: "notifications", element: <NotificationsPage /> },
+        { 
+          path: "dashboard",
+          element: <Dashboard />,
+          children: [
+          ]
+        },
+        {path: "workspace", element: <div>Workspace</div>}
       ],
     },
   ]);
