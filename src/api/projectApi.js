@@ -11,3 +11,8 @@ export const createProject = async (projectData) => {
     const res = await cusApi.post('project/create', projectData);
     return res;
 }
+
+export const addMemberInProject = async (data) => {
+    const res = await cusApi.post('project/add-member', data);
+    return res;
+}

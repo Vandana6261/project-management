@@ -1,25 +1,73 @@
 // src/components/ui/AddMemberModal.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserPlus, X, Mail, Shield } from "lucide-react";
+import { addMemberInProject, getOptions } from "../api/projectApi";
 
 function AddMemberModal({ project, onClose }) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("developer");
+  // const [roles, setRoles] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [roleOptions, setRoleOptions] = useState([]);
+  const [formData, setFormData] = useState({
+    projectId: project.id,
+    email: "",
+    role: roleOptions[0] || "",
+  });
+  const [errors, setErrors] = useState({});
+
+  // const [statusOptions, setStatusOptions] = useState([]);
+  // const [priorityOptions, setPriorityOptions] = useState([]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear validation error dynamically when the field is updated
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    console.log(formData);
     try {
       // TODO: Replace with your API call e.g., addProjectMember(project.id, { email, role })
-      console.log(`Adding ${email} as ${role} to project ${project.id}`);
-      onClose();
+      // console.log(`Adding ${email} as ${role} to project ${project.id}`);
+      const response = await addMemberInProject(formData);
+      console.log(await response.json());
+      // onClose();
     } catch (err) {
       console.error(err);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    async function fetchOptions() {
+      try {
+        const options = await getOptions();
+        // setStatusOptions(options.data.status);
+        // setPriorityOptions(options.data.priority);
+        setRoleOptions(options.data.roles);
+
+        if (options.data.roles.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            role: options.data.roles[0].value,
+          }));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchOptions();
+  }, []);
+
+  // console.log(roleOptions);
+  console.log(project);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -36,7 +84,9 @@ function AddMemberModal({ project, onClose }) {
             <UserPlus className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-extrabold text-title">Add Team Member</h3>
+            <h3 className="text-base font-extrabold text-title">
+              Add Team Member
+            </h3>
             <p className="text-xs text-muted">Project: {project.name}</p>
           </div>
         </div>
@@ -50,9 +100,12 @@ function AddMemberModal({ project, onClose }) {
               <Mail className="w-4 h-4 text-placeholder absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
+                name="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                // onChange={(e) => setEmail(e.target.value)}
+                // onChange={(e) => setFormData(...formData, email = e.target.value)}
+                onChange={handleChange}
                 placeholder="colleague@company.com"
                 className="w-full rounded-xl border border-inputBorder bg-inputBg py-2.5 pl-10 pr-3 text-xs text-title placeholder:text-placeholder focus:border-primary focus:outline-none transition-colors"
               />
@@ -66,13 +119,29 @@ function AddMemberModal({ project, onClose }) {
             <div className="relative">
               <Shield className="w-4 h-4 text-placeholder absolute left-3.5 top-1/2 -translate-y-1/2" />
               <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
+                // value={roleOptions.length ? roleOptions[0] : ""}
+                value={formData.role}
+                // onChange={(e) => setFormData(...formData, role = e.target.value)}
+                // onChange={(e) => setFormData((prev) => ({...prev, role: e.target.value}))}
+                onChange={handleChange}
+                name="role"
                 className="w-full rounded-xl border border-inputBorder bg-inputBg py-2.5 pl-10 pr-3 text-xs text-title focus:border-primary focus:outline-none transition-colors appearance-none cursor-pointer"
               >
-                <option value="developer" className="bg-card">Developer</option>
-                <option value="admin" className="bg-card">Admin</option>
-                <option value="viewer" className="bg-card">Viewer</option>
+                {roleOptions.map((role) => (
+                  <option
+                    key={role.label}
+                    value={role.value}
+                    className="bg-card"
+                  >
+                    {role.label}
+                  </option>
+                ))}
+                {/* <option value="admin" className="bg-card">
+                  Admin
+                </option>
+                <option value="viewer" className="bg-card">
+                  Viewer
+                </option> */}
               </select>
             </div>
           </div>

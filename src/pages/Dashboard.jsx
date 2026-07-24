@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import StatsOverview from "../components/ui/StatsOverview";
-import ProjectList from "../components/ui/ProjectList";
-import RecentActivity from "../components/ui/RecentActivity";
-import MyTasks from "../components/ui/MyTasks";
-import QuickActions from "../components/ui/QuickActions";
+import StatsOverview from "../components/StatsOverview";
+import ProjectList from "../components/ProjectList";
+import RecentActivity from "../components/RecentActivity";
+import MyTasks from "../components/MyTasks";
+import QuickActions from "../components/QuickActions";
 import ProjectForm from "../components/ProjectForm";
 import { cusApi } from "../utils/customFetch";
 import { BASE_URL } from "../config";
