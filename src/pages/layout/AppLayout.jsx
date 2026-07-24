@@ -47,6 +47,7 @@ function AppLayout() {
         onMenuClick={() => setIsSidebarOpen(true)}
         toggleTheme={toggleTheme}
         isThemeLight={isThemeLight}
+        isDashboardHome={isDashboardHome}
       />
 
       <main className="flex-1 p-4 sm:p-6 lg:p-8">
