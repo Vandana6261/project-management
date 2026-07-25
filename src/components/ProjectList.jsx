@@ -1,11 +1,13 @@
 // src/components/ui/ProjectList.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, ArrowRight, UserPlus, FolderKanban } from "lucide-react";
+import { Calendar, ArrowRight, UserPlus, FolderKanban, PlusSquare } from "lucide-react";
 import AddMemberModal from "./AddMemberModal";
+import AddTaskModal from "./AddTaskModal"; // Import the new modal
 
 function ProjectList({ projects = [] }) {
   const [selectedProjectForMember, setSelectedProjectForMember] = useState(null);
+  const [selectedProjectForTask, setSelectedProjectForTask] = useState(null);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -40,16 +42,17 @@ function ProjectList({ projects = [] }) {
                 const targetProject = project || item;
                 const { id: projectId, name, description, status, priority, dueDate } = targetProject;
 
-                // Check if user has permission to manage members
+                // Check if user has permission to manage members / tasks
                 const normalizedRole = (role || "").toLowerCase();
                 const canAddMember = normalizedRole === "owner" || normalizedRole === "admin";
+                const canAddTask = normalizedRole === "owner" || normalizedRole === "admin" || normalizedRole === "member";
 
                 return (
                   <div
                     key={memberId || projectId}
                     className="p-4 rounded-xl bg-inputBg border border-inputBorder hover:border-cardBorder transition-all flex flex-col justify-between gap-3"
                   >
-                    {/* Header: Title & Status */}
+                    {/* Header: Title & Action Buttons */}
                     <div className="flex justify-between items-start gap-2">
                       <div>
                         {role && (
@@ -61,7 +64,19 @@ function ProjectList({ projects = [] }) {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {/* Show "Add Member" button if user is Owner/Admin */}
+                        {/* Add Task Button */}
+                        {canAddTask && (
+                          <button
+                            onClick={() => setSelectedProjectForTask(targetProject)}
+                            className="flex items-center gap-1 text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary/20 transition-all cursor-pointer"
+                            title="Add Task to Project"
+                          >
+                            <PlusSquare className="w-3 h-3" />
+                            <span>Add Task</span>
+                          </button>
+                        )}
+
+                        {/* Add Member Button */}
                         {canAddMember && (
                           <button
                             onClick={() => setSelectedProjectForMember(targetProject)}
@@ -86,7 +101,7 @@ function ProjectList({ projects = [] }) {
                       </p>
                     )}
 
-                    {/* Metadata & Open Individual Workspace Link */}
+                    {/* Metadata & Open Link */}
                     <div className="flex justify-between items-center pt-2 border-t border-cardBorder/50 text-[11px] text-muted">
                       <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1.5">
@@ -101,7 +116,6 @@ function ProjectList({ projects = [] }) {
                       </div>
 
                       <Link
-                        // to={`/projects/${projectId}`}
                         to={'/workspace'}
                         className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primaryHover transition-colors cursor-pointer"
                       >
@@ -117,11 +131,20 @@ function ProjectList({ projects = [] }) {
         </div>
       </div>
 
-      {/* Add Member Modal Target */}
+      {/* Add Member Modal */}
       {selectedProjectForMember && (
         <AddMemberModal
           project={selectedProjectForMember}
           onClose={() => setSelectedProjectForMember(null)}
+        />
+      )}
+
+      {/* Add Task Modal */}
+      {selectedProjectForTask && (
+        <AddTaskModal
+          project={selectedProjectForTask}
+          onClose={() => setSelectedProjectForTask(null)}
+          onTaskAdded={() => console.log("Task successfully added")}
         />
       )}
     </>
