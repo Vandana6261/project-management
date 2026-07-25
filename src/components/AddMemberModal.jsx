@@ -35,6 +35,7 @@ function AddMemberModal({ project, onClose }) {
       // TODO: Replace with your API call e.g., addProjectMember(project.id, { email, role })
       // console.log(`Adding ${email} as ${role} to project ${project.id}`);
       const response = await addMemberInProject(formData);
+      // console.log(formData, "formData");
       console.log(await response.json());
       // onClose();
     } catch (err) {
@@ -67,7 +68,7 @@ function AddMemberModal({ project, onClose }) {
   }, []);
 
   // console.log(roleOptions);
-  console.log(project);
+  // console.log(project);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -93,12 +94,13 @@ function AddMemberModal({ project, onClose }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5 block">
+            <label htmlFor="email" className="text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5 block">
               Member Email
             </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-placeholder absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
+                id="email"
                 type="email"
                 name="email"
                 required
@@ -113,12 +115,13 @@ function AddMemberModal({ project, onClose }) {
           </div>
 
           <div>
-            <label className="text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5 block">
+            <label htmlFor="role" className="text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5 block">
               Assign Role
             </label>
             <div className="relative">
               <Shield className="w-4 h-4 text-placeholder absolute left-3.5 top-1/2 -translate-y-1/2" />
               <select
+                id="role"
                 // value={roleOptions.length ? roleOptions[0] : ""}
                 value={formData.role}
                 // onChange={(e) => setFormData(...formData, role = e.target.value)}
