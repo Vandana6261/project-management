@@ -26,3 +26,8 @@ export const getTaskOptions = async () => {
     const res = await cusApi.get('project/task/getOptions')
     return await res.json();
 }
+
+export const addTaskInProject = async (payload) => {
+    const res = await cusApi.post('project/task/create', payload);
+    return await res.json();
+}
