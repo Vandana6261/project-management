@@ -13,6 +13,7 @@ import { me } from './utils/user'
 import ProtectedRoute from './routes/ProtectedRoute'
 import AppLoader from './loaders/AppLoader'
 import AppLayout from './pages/layout/AppLayout'
+import { ProjectProvider } from './context/ProjectContext'
 
 
 
@@ -38,7 +39,9 @@ function App() {
       path: "/",
       element: (
         <ProtectedRoute>
+          <ProjectProvider>
           <AppLayout />
+          </ProjectProvider>
         </ProtectedRoute>
       ),
       children: [

@@ -38,8 +38,9 @@ function ProjectList({ projects = [] }) {
               </div>
             ) : (
               projects.map((item) => {
-                const { id: memberId, role, project } = item;
-                const targetProject = project || item;
+                console.log(item, "item")
+                const { id: memberId, role, project } = item;       // use item.id and rename it as memberId
+                const targetProject = project;
                 const { id: projectId, name, description, status, priority, dueDate } = targetProject;
 
                 // Check if user has permission to manage members / tasks

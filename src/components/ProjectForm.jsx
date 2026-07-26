@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { createProject, getOptions } from "../api/projectApi";
+import useProjectContext from "../context/ProjectContext";
 
-function ProjectForm() {
+function ProjectForm({ onSuccess }) {
+  const { refreshProjects } = useProjectContext();
+
   const [statusOptions, setStatusOptions] = useState([]);
   const [priorityOptions, setPriorityOptions] = useState([]);
 
@@ -72,8 +75,19 @@ function ProjectForm() {
 
     if (!validateForm()) return;
 
-    const res = await createProject(formData);
-    console.log(await res.json());
+    // const res = await createProject(formData);
+    // console.log(await res.json());
+
+    try {
+      const res = await createProject(formData);
+      if (res.ok) {
+        console.log(await res.json());
+        await refreshProjects(); // Re-fetches fresh project list into Context
+        if (onSuccess) onSuccess();
+      }
+    } catch (error) {
+      console.error(error);
+    }
 
     // Clear form state context completely following successful operation execution
     setFormData({

@@ -5,26 +5,16 @@ import RecentActivity from "../components/RecentActivity";
 import MyTasks from "../components/MyTasks";
 import QuickActions from "../components/QuickActions";
 import ProjectForm from "../components/ProjectForm";
-import { cusApi } from "../utils/customFetch";
-import { BASE_URL } from "../config";
+import useProjectContext from "../context/ProjectContext";
 
 function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [projects, setProjects] = useState();
+  const { projects, loading, fetchProjects } = useProjectContext();
+  // const projects = []
 
   useEffect(() => {
-    async function getProject() {
-      try {
-        const response = await cusApi.get('project/get-project')
-        const data = await response.json();
-        console.log(data);
-        setProjects(data.project);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getProject();
-  }, []);
+    fetchProjects(); // Will only execute an API call if projects haven't been fetched yet
+  }, [fetchProjects]);
 
   return (
     <div className="min-h-screen bg-page text-body p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8 select-none">
@@ -35,8 +25,7 @@ function Dashboard() {
             Engine Workspace Dashboard
           </h1>
           <p className="text-xs text-muted mt-1">
-            Overview of real-time velocity, active sprints, and task
-            distributions.
+            Overview of real-time velocity, active sprints, and task distributions.
           </p>
         </div>
 
@@ -48,18 +37,20 @@ function Dashboard() {
         </button>
       </div>
 
-      {/* Top Row: Metric Stats */}
-      <StatsOverview />
+      {/* Metric Stats */}
+      <StatsOverview projects={projects} />
 
-      {/* Main Grid: 2 Columns on desktop */}
+      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Span (2 Columns) */}
         <div className="lg:col-span-2 space-y-8">
-          <ProjectList projects={projects} />
+          {loading ? (
+            <div className="p-6 text-center text-xs text-muted">Loading projects...</div>
+          ) : (
+            <ProjectList projects={projects} />
+          )}
           <MyTasks />
         </div>
 
-        {/* Right Span (1 Column Sidebar) */}
         <div className="space-y-8">
           <QuickActions onOpenCreateModal={() => setShowCreateModal(true)} />
           <RecentActivity />
@@ -70,14 +61,13 @@ function Dashboard() {
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div className="relative w-full max-w-xl">
-            {/* Close Button */}
             <button
               onClick={() => setShowCreateModal(false)}
               className="absolute top-4 right-4 z-10 text-muted hover:text-title text-sm font-bold p-2 cursor-pointer"
             >
               ✕
             </button>
-            <ProjectForm />
+            <ProjectForm onSuccess={() => setShowCreateModal(false)} />
           </div>
         </div>
       )}
