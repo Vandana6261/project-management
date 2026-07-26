@@ -30,6 +30,7 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
   const [memberOptions, setMemberOptions] = useState([]); // Master list of project members
   const [memberToShow, setMemberToShow] = useState([]); // Filtered dropdown options
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [resError, setResError] = useState({});
   
   const dropdownRef = useRef(null);
 
@@ -143,6 +144,10 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
       const response = await addTaskInProject(payload);
       // if (onTaskAdded) onTaskAdded(response);
       console.log(response, "add Task Result");
+      if(!response.success) {
+        setResError({message: response.message});
+        return;
+      }
       onClose();
     } catch (err) {
       console.error("Failed to add task:", err);
@@ -371,6 +376,8 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
               />
             </div>
           </div>
+
+          {resError?.message && <p className="text-alert text-sm">{resError.message}</p>}
 
           {/* Form Actions */}
           <div className="flex justify-end gap-3 pt-3 border-t border-cardBorder">

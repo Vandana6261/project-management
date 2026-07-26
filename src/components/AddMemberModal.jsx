@@ -13,12 +13,13 @@ function AddMemberModal({ project, onClose }) {
     email: "",
     role: roleOptions[0] || "",
   });
-  const [errors, setErrors] = useState({});
+  const [resError, setResError] = useState({});
 
   // const [statusOptions, setStatusOptions] = useState([]);
   // const [priorityOptions, setPriorityOptions] = useState([]);
 
   const handleChange = (e) => {
+    setResError({})
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear validation error dynamically when the field is updated
@@ -29,15 +30,20 @@ function AddMemberModal({ project, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setIsSubmitting(true);  
     console.log(formData);
     try {
       // TODO: Replace with your API call e.g., addProjectMember(project.id, { email, role })
       // console.log(`Adding ${email} as ${role} to project ${project.id}`);
       const response = await addMemberInProject(formData);
       // console.log(formData, "formData");
+      console.log(response)
+      if(!response.success) {
+        setResError({message: response.message});
+        return;
+      }
       console.log(await response.json());
-      // onClose();
+      onClose();
     } catch (err) {
       console.error(err);
     } finally {
@@ -148,6 +154,8 @@ function AddMemberModal({ project, onClose }) {
               </select>
             </div>
           </div>
+
+          {resError?.message && <p className="text-alert text-sm">{resError.message}</p>}
 
           <div className="flex justify-end gap-3 pt-3">
             <button

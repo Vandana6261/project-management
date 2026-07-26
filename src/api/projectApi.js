@@ -14,7 +14,7 @@ export const createProject = async (projectData) => {
 
 export const addMemberInProject = async (data) => {
     const res = await cusApi.post('project/add-member', data);
-    return res;
+    return await res.json();
 }
 
 export const getProjectMembers = async (projectId) => {
@@ -23,7 +23,7 @@ export const getProjectMembers = async (projectId) => {
 }
 
 export const getTaskOptions = async () => {
-    const res = await cusApi.get('project/task/getOptions')
+    const res = await cusApi.get('project/task/get-options')
     return await res.json();
 }
 
