@@ -36,7 +36,7 @@ export async function customFetch(path, options = {}) {
 
       if (refreshRes.ok) {
         console.log("Refresh successful! Retrying original request...");
-        return await fetch(url, options);
+        return await fetch(url, fetchOptions);
       }
     } catch (refreshError) {
       console.error("Refresh token network error:", refreshError);
