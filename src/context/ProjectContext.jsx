@@ -7,6 +7,8 @@ export const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false); // Cache flag
+  const [tasks, setTasks] = useState([]);
+
 
   // Memoized fetch function so it can be safely used in useEffects
   const fetchProjects = useCallback(async (forceRefresh = false) => {
@@ -29,6 +31,21 @@ export const ProjectProvider = ({ children }) => {
   // Helper to add or invalidate projects after creating a new one
   const refreshProjects = () => fetchProjects(true);
 
+
+  const fetchAssignedTasks = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await cusApi.get("project/task/assigned-task");
+      const result = await response.json();
+      setTasks(result.data);
+    } catch (error) {
+      console.error("Failed to fetch tasks", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+
   return (
     <ProjectContext.Provider
       value={{
@@ -36,6 +53,8 @@ export const ProjectProvider = ({ children }) => {
         loading,
         fetchProjects,
         refreshProjects,
+        tasks,
+        fetchAssignedTasks
       }}
     >
       {children}

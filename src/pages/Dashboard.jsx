@@ -9,12 +9,13 @@ import useProjectContext from "../context/ProjectContext";
 
 function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const { projects, loading, fetchProjects } = useProjectContext();
+  const { projects, loading, fetchProjects, tasks, fetchAssignedTasks } = useProjectContext();
   // const projects = []
 
   useEffect(() => {
     fetchProjects(); // Will only execute an API call if projects haven't been fetched yet
-  }, [fetchProjects]);
+    fetchAssignedTasks();
+  }, [fetchProjects, fetchAssignedTasks]);
 
   return (
     <div className="min-h-screen bg-page text-body p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8 select-none">
@@ -48,7 +49,7 @@ function Dashboard() {
           ) : (
             <ProjectList projects={projects} />
           )}
-          <MyTasks />
+          <MyTasks tasks={tasks} />
         </div>
 
         <div className="space-y-8">
