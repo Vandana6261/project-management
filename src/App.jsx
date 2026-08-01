@@ -14,12 +14,18 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import AppLoader from './loaders/AppLoader'
 import AppLayout from './pages/layout/AppLayout'
 import { ProjectProvider } from './context/ProjectContext'
+import WorkspaceLayout from './pages/layout/WorkspaceLayout'
 
 
 
 const TasksPage = () => <div className="text-title font-bold text-xl">Tasks Workspace</div>;
 const ChatbotPage = () => <div className="text-title font-bold text-xl">AI Assistant Engine</div>;
 const NotificationsPage = () => <div className="text-title font-bold text-xl">Activity Notifications</div>;
+
+const ProjectOverview = () => <div className="text-title font-bold text-xl">Project Progress Overview</div>;
+const ProjectTasks = () => <div className="text-title font-bold text-xl">All Project Tasks</div>;
+const UserProjectTasks = () => <div className="text-title font-bold text-xl">My Assigned Project Tasks</div>;
+const ProjectChatbot = () => <div className="text-title font-bold text-xl">Project AI Assistant</div>;
 
 function App() {
   const { uLoading } = useAuthContext();
@@ -48,10 +54,17 @@ function App() {
         { 
           path: "dashboard",
           element: <Dashboard />,
-          children: [
-          ]
         },
-        {path: "workspace", element: <div>Workspace</div>}
+        {
+          path: "workspace/:projectId",
+          element: <WorkspaceLayout />,
+          children: [
+            { index: true, element: <ProjectOverview /> },
+            { path: "tasks", element: <ProjectTasks /> },
+            { path: "my-tasks", element: <UserProjectTasks /> },
+            { path: "chatbot", element: <ProjectChatbot /> },
+          ],
+        },
       ],
     },
   ]);

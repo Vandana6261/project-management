@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import { Calendar, ArrowRight, UserPlus, FolderKanban, PlusSquare } from "lucide-react";
 import AddMemberModal from "./AddMemberModal";
 import AddTaskModal from "./AddTaskModal"; // Import the new modal
+import useProjectContext from "../context/ProjectContext";
 
 function ProjectList({ projects = [] }) {
+  const { setSelectedProject } = useProjectContext()
   const [selectedProjectForMember, setSelectedProjectForMember] = useState(null);
   const [selectedProjectForTask, setSelectedProjectForTask] = useState(null);
 
@@ -116,7 +118,8 @@ function ProjectList({ projects = [] }) {
                       </div>
 
                       <Link
-                        to={'/workspace'}
+                        to={`/workspace/${projectId}`}
+                        onClick={() => setSelectedProject(projects.projectId)}
                         className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primaryHover transition-colors cursor-pointer"
                       >
                         <span>Open Project</span>
