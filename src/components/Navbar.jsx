@@ -1,39 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
+import useThemeContext from "../context/ThemeContext";
 
 function Navbar() {
   const { user } = useAuthContext();
-  const [isThemeLight, setIsThemeLight] = useState(
-    () => document.documentElement.classList.contains("light")
-  );
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const systemPrefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-    const shouldBeLight = savedTheme === "light" || (!savedTheme && systemPrefersLight);
-
-    if (shouldBeLight) {
-      document.documentElement.classList.add("light");
-      setIsThemeLight(true);
-    } else {
-      document.documentElement.classList.remove("light");
-      setIsThemeLight(false);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const html = document.documentElement;
-    if (html.classList.contains("light")) {
-      html.classList.remove("light");
-      setIsThemeLight(false);
-      localStorage.setItem("theme", "dark");
-    } else {
-      html.classList.add("light");
-      setIsThemeLight(true);
-      localStorage.setItem("theme", "light");
-    }
-  };
+  const { isThemeLight, toggleTheme } = useThemeContext();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-cardBorder bg-page/80 backdrop-blur-md transition-colors duration-300">
