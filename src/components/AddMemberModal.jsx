@@ -1,4 +1,4 @@
-// src/components/ui/AddMemberModal.jsx
+
 import React, { useEffect, useState } from "react";
 import { UserPlus, X, Mail, Shield } from "lucide-react";
 import { addMemberInProject, getOptions } from "../api/projectApi";

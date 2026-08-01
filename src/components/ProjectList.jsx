@@ -1,4 +1,3 @@
-// src/components/ui/ProjectList.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, ArrowRight, UserPlus, FolderKanban, PlusSquare } from "lucide-react";
