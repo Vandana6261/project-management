@@ -1,4 +1,3 @@
-// src/components/ui/AddTaskModal.jsx
 import React, { useState, useEffect, useRef } from "react";
 import {
   CheckSquare,
@@ -8,20 +7,25 @@ import {
   ShieldAlert,
   Users,
 } from "lucide-react";
-import { addTaskInProject, getProjectMembers, getTaskOptions } from "../api/projectApi";
-// import { addTaskInProject } from "../api/projectApi"; // Ensure this function exists in your API helper
+import {
+  addTaskInProject,
+  getProjectMembers,
+  getTaskOptions,
+} from "../api/projectApi";
+
+const initialFormState = {
+  title: "",
+  description: "",
+  status: "TODO",
+  priority: "MEDIUM",
+  startDate: "",
+  dueDate: "",
+  projectId: "",
+  members: [], // Array of assigned member IDs/objects
+};
 
 function AddTaskModal({ project, onClose, onTaskAdded }) {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    status: "TODO",
-    priority: "MEDIUM",
-    startDate: "",
-    dueDate: "",
-    projectId: project?.id || "",
-    members: [], // Array of assigned member IDs/objects
-  });
+  const [formData, setFormData] = useState({...initialFormState, projectId: project?.id});
 
   const [memberInput, setMemberInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +35,8 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
   const [memberToShow, setMemberToShow] = useState([]); // Filtered dropdown options
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [resError, setResError] = useState({});
-  
+  const [inputError, setInputError] = useState({});
+
   const dropdownRef = useRef(null);
 
   // Sync projectId if project prop changes
@@ -44,12 +49,12 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
       try {
         const [options, membersRes] = await Promise.all([
           getTaskOptions(),
-          getProjectMembers(project.id)
+          getProjectMembers(project.id),
         ]);
-        
+
         setStatusOptions(options.data.status);
         setPriorityOptions(options.data.priority);
-        
+
         // Assume membersRes.members returns the array of members
         const fetchedMembers = membersRes.members || [];
         setMemberOptions(fetchedMembers);
@@ -78,8 +83,7 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
       } else {
         const query = memberInput.toLowerCase();
         const filtered = memberOptions.filter(
-          (m) =>
-            (m.username && m.username.toLowerCase().includes(query))
+          (m) => m.username && m.username.toLowerCase().includes(query),
         );
         setMemberToShow(filtered);
       }
@@ -101,6 +105,8 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setInputError({});
+    setResError({});
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -140,14 +146,15 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
     };
 
     try {
-      console.log(payload);
+      // console.log(payload);
       const response = await addTaskInProject(payload);
       // if (onTaskAdded) onTaskAdded(response);
       console.log(response, "add Task Result");
-      if(!response.success) {
-        setResError({message: response.message});
+      if (!response.success) {
+        setResError({ message: response.message });
         return;
       }
+      setFormData(initialFormState);
       onClose();
     } catch (err) {
       console.error("Failed to add task:", err);
@@ -228,12 +235,14 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
             >
               Assign Members
             </label>
-            
+
             <div className="w-full rounded-xl border border-inputBorder bg-inputBg p-2 flex flex-wrap items-center gap-1.5 focus-within:border-primary transition-colors">
               {/* Selected Member Chips */}
               {formData.members.map((member) => {
                 const memberId = member.id || member;
-                const memberObj = memberOptions.find((m) => (m.id || m) === memberId) || { username: member };
+                const memberObj = memberOptions.find(
+                  (m) => (m.id || m) === memberId,
+                ) || { username: member };
                 return (
                   <span
                     key={memberId}
@@ -258,7 +267,11 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
                 value={memberInput}
                 onChange={(e) => setMemberInput(e.target.value)}
                 onFocus={() => setIsDropdownOpen(true)}
-                placeholder={formData.members.length === 0 ? "Type to search members..." : "Add more..."}
+                placeholder={
+                  formData.members.length === 0
+                    ? "Type to search members..."
+                    : "Add more..."
+                }
                 className="flex-1 bg-transparent border-none py-1 px-1 text-xs text-title placeholder:text-placeholder focus:outline-none min-w-[120px]"
               />
             </div>
@@ -270,7 +283,7 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
                   memberToShow.map((member) => {
                     const memberId = member.id || member;
                     const isSelected = formData.members.some(
-                      (m) => (m.id || m) === memberId
+                      (m) => (m.id || m) === memberId,
                     );
                     if (isSelected) return null;
 
@@ -309,11 +322,16 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
                 onChange={handleChange}
                 className="w-full rounded-xl border border-inputBorder bg-inputBg py-2.5 px-3 text-xs text-title focus:border-primary focus:outline-none transition-colors cursor-pointer"
               >
-                {statusOptions.length > 0 && statusOptions.map((status) => (
-                  <option key={status.value} value={status.value} className="bg-card">
-                    {status.label}
-                  </option>
-                ))}
+                {statusOptions.length > 0 &&
+                  statusOptions.map((status) => (
+                    <option
+                      key={status.value}
+                      value={status.value}
+                      className="bg-card"
+                    >
+                      {status.label}
+                    </option>
+                  ))}
               </select>
             </div>
 
@@ -331,11 +349,16 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
                 onChange={handleChange}
                 className="w-full rounded-xl border border-inputBorder bg-inputBg py-2.5 px-3 text-xs text-title focus:border-primary focus:outline-none transition-colors cursor-pointer"
               >
-                {priorityOtions.length > 0 && priorityOtions.map((priority) => (
-                  <option key={priority.value} value={priority.value} className="bg-card">
-                    {priority.label}
-                  </option>
-                ))}
+                {priorityOtions.length > 0 &&
+                  priorityOtions.map((priority) => (
+                    <option
+                      key={priority.value}
+                      value={priority.value}
+                      className="bg-card"
+                    >
+                      {priority.label}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
@@ -377,7 +400,12 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
             </div>
           </div>
 
-          {resError?.message && <p className="text-alert text-sm">{resError.message}</p>}
+          {resError?.message && (
+            <p className="text-alert text-sm">{resError.message}</p>
+          )}
+          {inputError?.message && (
+            <p className="text-alert text-sm">{inputError.message}</p>
+          )}
 
           {/* Form Actions */}
           <div className="flex justify-end gap-3 pt-3 border-t border-cardBorder">

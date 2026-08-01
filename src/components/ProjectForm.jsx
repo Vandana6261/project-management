@@ -2,6 +2,15 @@ import React, { useEffect, useState } from "react";
 import { createProject, getOptions } from "../api/projectApi";
 import useProjectContext from "../context/ProjectContext";
 
+const initialFormState = {
+  name: "",
+  description: "",
+  status: "",
+  priority: "",
+  startDate: "",
+  dueDate: "",
+};
+
 function ProjectForm({ onSuccess }) {
   const { refreshProjects } = useProjectContext();
 
@@ -9,16 +18,11 @@ function ProjectForm({ onSuccess }) {
   const [priorityOptions, setPriorityOptions] = useState([]);
 
   // Controlled form state matching your needed fields
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    status: "",
-    priority: "",
-    startDate: "",
-    dueDate: "",
-  });
-
-  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resError, setResError] = useState({});
+  // const [errors, setInputError] = useState({});
+  const [inputError, setInputError] = useState({});
 
   useEffect(() => {
     async function fetchOptions() {
@@ -34,17 +38,15 @@ function ProjectForm({ onSuccess }) {
     fetchOptions();
   }, []);
 
-  // Centralized change handler tracking all input field types
   const handleChange = (e) => {
+    setResError({});
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear validation error dynamically when the field is updated
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (inputError[name]) {
+      setInputError((prev) => ({ ...prev, [name]: "" }));
     }
   };
-
-  // Dedicated validation runner ensuring rule matching for dates
   const validateForm = () => {
     let localErrors = {};
     const todayStr = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
@@ -66,7 +68,7 @@ function ProjectForm({ onSuccess }) {
       localErrors.dueDate = "Due date must be after the start date.";
     }
 
-    setErrors(localErrors);
+    setInputError(localErrors);
     return Object.keys(localErrors).length === 0;
   };
 
@@ -74,31 +76,25 @@ function ProjectForm({ onSuccess }) {
     e.preventDefault();
 
     if (!validateForm()) return;
-
-    // const res = await createProject(formData);
-    // console.log(await res.json());
+    setIsSubmitting(true);
 
     try {
       const res = await createProject(formData);
-      if (res.ok) {
-        console.log(await res.json());
-        await refreshProjects(); // Re-fetches fresh project list into Context
-        if (onSuccess) onSuccess();
+      if (!res.success) {
+        setResError({ message: res.message });
+        return;
       }
+      console.log(res)
+      await refreshProjects(); // Re-fetches fresh project list into Context
+      setFormData(initialFormState);
+      if (onSuccess) onSuccess();
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
 
-    // Clear form state context completely following successful operation execution
-    setFormData({
-      name: "",
-      description: "",
-      status: "",
-      priority: "",
-      startDate: "",
-      dueDate: "",
-    });
-    setErrors({});
+    setInputError({});
   };
 
   // Reusable component class string generators matching standard layouts
@@ -127,7 +123,7 @@ function ProjectForm({ onSuccess }) {
             placeholder="e.g., Pulse Engine Architecture v2"
             className={inputBaseClass}
           />
-          {errors.name && <p className={errorClass}>{errors.name}</p>}
+          {inputError.name && <p className={errorClass}>{inputError.name}</p>}
         </div>
 
         {/* Project Description Textarea Field */}
@@ -142,7 +138,9 @@ function ProjectForm({ onSuccess }) {
             placeholder="Outline structural milestones, technology stacks, and primary workspace objectives..."
             className={`${inputBaseClass} resize-none`}
           />
-          {errors.description && <p className={errorClass}>{errors.description}</p>}
+          {inputError.description && (
+            <p className={errorClass}>{inputError.description}</p>
+          )}
         </div>
 
         {/* Dual Column Container for Select Menus */}
@@ -159,12 +157,16 @@ function ProjectForm({ onSuccess }) {
             >
               <option value="" disabled className="bg-card">Select Status Context</option>
               {statusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-card text-title">
+                <option 
+                  key={opt.value} 
+                  value={opt.value} 
+                  className="bg-card text-title"
+                >
                   {opt.label}
                 </option>
               ))}
             </select>
-            {errors.status && <p className={errorClass}>{errors.status}</p>}
+            {inputError.status && <p className={errorClass}>{inputError.status}</p>}
           </div>
 
           {/* Priority Dynamic Dropdown Selector */}
@@ -179,12 +181,16 @@ function ProjectForm({ onSuccess }) {
             >
               <option value="" disabled className="bg-card">Select Vector Priority</option>
               {priorityOptions.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-card text-title">
+                <option 
+                  key={opt.value} 
+                  value={opt.value} 
+                  className="bg-card text-title"
+                >
                   {opt.label}
                 </option>
               ))}
             </select>
-            {errors.priority && <p className={errorClass}>{errors.priority}</p>}
+            {inputError.priority && <p className={errorClass}>{inputError.priority}</p>}
           </div>
         </div>
 
@@ -201,7 +207,9 @@ function ProjectForm({ onSuccess }) {
               onChange={handleChange}
               className={inputBaseClass}
             />
-            {errors.startDate && <p className={errorClass}>{errors.startDate}</p>}
+            {inputError.startDate && (
+              <p className={errorClass}>{inputError.startDate}</p>
+            )}
           </div>
 
           {/* Due Date Field */}
@@ -215,7 +223,7 @@ function ProjectForm({ onSuccess }) {
               onChange={handleChange}
               className={inputBaseClass}
             />
-            {errors.dueDate && <p className={errorClass}>{errors.dueDate}</p>}
+            {inputError.dueDate && <p className={errorClass}>{inputError.dueDate}</p>}
           </div>
         </div>
 
@@ -225,10 +233,9 @@ function ProjectForm({ onSuccess }) {
             type="submit"
             className="w-full sm:w-auto rounded-xl bg-primary hover:bg-primaryHover text-xs font-extrabold uppercase tracking-widest text-white py-3 px-6 shadow-md shadow-primary/15 transition-all duration-200 active:scale-[0.98] cursor-pointer"
           >
-            Create Architecture Context
+            {isSubmitting ? "Creating...." : "Create"}
           </button>
         </div>
-
       </form>
     </div>
   );

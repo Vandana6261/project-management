@@ -4,8 +4,6 @@ import { UserPlus, X, Mail, Shield } from "lucide-react";
 import { addMemberInProject, getOptions } from "../api/projectApi";
 
 function AddMemberModal({ project, onClose }) {
-  const [email, setEmail] = useState("");
-  // const [roles, setRoles] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [roleOptions, setRoleOptions] = useState([]);
   const [formData, setFormData] = useState({
@@ -14,12 +12,12 @@ function AddMemberModal({ project, onClose }) {
     role: roleOptions[0] || "",
   });
   const [resError, setResError] = useState({});
+  const [inputError, setInputError] = useState({});
 
-  // const [statusOptions, setStatusOptions] = useState([]);
-  // const [priorityOptions, setPriorityOptions] = useState([]);
 
   const handleChange = (e) => {
-    setResError({})
+    setResError({});
+    setInputError({});
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear validation error dynamically when the field is updated
@@ -30,19 +28,27 @@ function AddMemberModal({ project, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);  
+    if(!formData.email || !formData.role) {
+      setInputError.message = "Please fill all of the field"
+      return;
+    }
+    setIsSubmitting(true);
     console.log(formData);
     try {
-      // TODO: Replace with your API call e.g., addProjectMember(project.id, { email, role })
-      // console.log(`Adding ${email} as ${role} to project ${project.id}`);
-      const response = await addMemberInProject(formData);
       // console.log(formData, "formData");
-      console.log(response)
-      if(!response.success) {
-        setResError({message: response.message});
+      const response = await addMemberInProject(formData);
+      console.log(response);
+      if (!response.success) {
+        setResError({ message: response.message });
         return;
       }
-      console.log(await response.json());
+      console.log(response);
+      
+      setFormData({
+        projectId: project.id,
+        email: "",
+        role: roleOptions[0] || "",
+      });
       onClose();
     } catch (err) {
       console.error(err);
@@ -55,8 +61,7 @@ function AddMemberModal({ project, onClose }) {
     async function fetchOptions() {
       try {
         const options = await getOptions();
-        // setStatusOptions(options.data.status);
-        // setPriorityOptions(options.data.priority);
+        
         setRoleOptions(options.data.roles);
 
         if (options.data.roles.length > 0) {
@@ -73,8 +78,6 @@ function AddMemberModal({ project, onClose }) {
     fetchOptions();
   }, []);
 
-  // console.log(roleOptions);
-  // console.log(project);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -100,7 +103,10 @@ function AddMemberModal({ project, onClose }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5 block">
+            <label
+              htmlFor="email"
+              className="text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5 block"
+            >
               Member Email
             </label>
             <div className="relative">
@@ -111,8 +117,6 @@ function AddMemberModal({ project, onClose }) {
                 name="email"
                 required
                 value={formData.email}
-                // onChange={(e) => setEmail(e.target.value)}
-                // onChange={(e) => setFormData(...formData, email = e.target.value)}
                 onChange={handleChange}
                 placeholder="colleague@company.com"
                 className="w-full rounded-xl border border-inputBorder bg-inputBg py-2.5 pl-10 pr-3 text-xs text-title placeholder:text-placeholder focus:border-primary focus:outline-none transition-colors"
@@ -121,17 +125,17 @@ function AddMemberModal({ project, onClose }) {
           </div>
 
           <div>
-            <label htmlFor="role" className="text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5 block">
+            <label
+              htmlFor="role"
+              className="text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5 block"
+            >
               Assign Role
             </label>
             <div className="relative">
               <Shield className="w-4 h-4 text-placeholder absolute left-3.5 top-1/2 -translate-y-1/2" />
               <select
                 id="role"
-                // value={roleOptions.length ? roleOptions[0] : ""}
                 value={formData.role}
-                // onChange={(e) => setFormData(...formData, role = e.target.value)}
-                // onChange={(e) => setFormData((prev) => ({...prev, role: e.target.value}))}
                 onChange={handleChange}
                 name="role"
                 className="w-full rounded-xl border border-inputBorder bg-inputBg py-2.5 pl-10 pr-3 text-xs text-title focus:border-primary focus:outline-none transition-colors appearance-none cursor-pointer"
@@ -145,17 +149,17 @@ function AddMemberModal({ project, onClose }) {
                     {role.label}
                   </option>
                 ))}
-                {/* <option value="admin" className="bg-card">
-                  Admin
-                </option>
-                <option value="viewer" className="bg-card">
-                  Viewer
-                </option> */}
               </select>
             </div>
           </div>
 
-          {resError?.message && <p className="text-alert text-sm">{resError.message}</p>}
+          {inputError?.message && (
+            <p className="text-alert text-sm">{inputError.message}</p>
+          )}
+
+          {resError?.message && (
+            <p className="text-alert text-sm">{resError.message}</p>
+          )}
 
           <div className="flex justify-end gap-3 pt-3">
             <button
@@ -170,7 +174,7 @@ function AddMemberModal({ project, onClose }) {
               disabled={isSubmitting}
               className="px-5 py-2 rounded-xl bg-primary hover:bg-primaryHover text-white text-xs font-bold uppercase tracking-wider transition-all"
             >
-              {isSubmitting ? "Inviting..." : "Send Invite"}
+              {isSubmitting ? "Adding..." : "Add Member"}
             </button>
           </div>
         </form>

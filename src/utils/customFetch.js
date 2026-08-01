@@ -3,7 +3,7 @@ import { BASE_URL } from "../config";
 export async function customFetch(path, options = {}) {
   const url = `${BASE_URL}/api/${path}`;
 
-  console.log(url, "url");
+  // console.log(url, "url");
 
 
   const fetchOptions = {

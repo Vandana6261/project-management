@@ -9,7 +9,7 @@ export const getOptions = async () => {
 
 export const createProject = async (projectData) => {
     const res = await cusApi.post('project/create', projectData);
-    return res;
+    return await res.json();
 }
 
 export const addMemberInProject = async (data) => {
