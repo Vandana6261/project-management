@@ -46,7 +46,7 @@ function ProjectList({ projects = [] }) {
                 // Check if user has permission to manage members / tasks
                 const normalizedRole = (role || "").toLowerCase();
                 const canAddMember = normalizedRole === "owner" || normalizedRole === "admin";
-                const canAddTask = normalizedRole === "owner" || normalizedRole === "admin" || normalizedRole === "member";
+                const canAddTask = normalizedRole === "owner" || normalizedRole === "admin";
 
                 return (
                   <div
