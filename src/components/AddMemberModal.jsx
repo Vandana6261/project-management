@@ -21,7 +21,7 @@ function AddMemberModal({ project, onClose }) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear validation error dynamically when the field is updated
-    if (errors[name]) {
+    if (inputError[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
