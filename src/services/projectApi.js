@@ -1,6 +1,6 @@
 import { BASE_URL } from "../config";
-import { cusApi } from "../utils/customFetch";
-import { api } from "./fetchWrapper"
+import { cusApi } from "./customFetch";
+import { api } from "../api/fetchWrapper"
 
 export const getOptions = async () => {
     const res = await cusApi.get('project/project-options');

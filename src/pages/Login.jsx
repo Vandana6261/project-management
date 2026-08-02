@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { inputBase, label, passWordInput, passWordInnerInput, submitButton } from "../styles/Auth";
-import { login } from "../api/Auth";
+import { login } from "../services/Auth";
 import { useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
 

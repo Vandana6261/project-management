@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createProject, getOptions } from "../api/projectApi";
+import { createProject, getOptions } from "../services/projectApi";
 import useProjectContext from "../context/ProjectContext";
 
 const initialFormState = {

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { UserPlus, X, Mail, Shield } from "lucide-react";
-import { addMemberInProject, getOptions } from "../api/projectApi";
+import { addMemberInProject, getOptions } from "../services/projectApi";
 
 function AddMemberModal({ project, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);

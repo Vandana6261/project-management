@@ -6,7 +6,7 @@ import {
   passWordInnerInput,
   submitButton,
 } from "../styles/Auth";
-import { register, requestOtp, varifyOtp } from "../api/Auth";
+import { register, requestOtp, varifyOtp } from "../services/Auth";
 import { useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
 

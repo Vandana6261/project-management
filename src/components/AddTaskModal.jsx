@@ -11,7 +11,7 @@ import {
   addTaskInProject,
   getProjectMembers,
   getTaskOptions,
-} from "../api/projectApi";
+} from "../services/projectApi";
 
 const initialFormState = {
   title: "",
@@ -149,7 +149,7 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
       // console.log(payload);
       const response = await addTaskInProject(payload);
       // if (onTaskAdded) onTaskAdded(response);
-      console.log(response, "add Task Result");
+      // console.log(response, "add Task Result");
       if (!response.success) {
         setResError({ message: response.message });
         return;

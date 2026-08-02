@@ -1,5 +1,5 @@
 import { BASE_URL } from "../config";
-import { cusApi } from "./customFetch";
+import { cusApi } from "../services/customFetch";
 
 export async function me() {
     try {
