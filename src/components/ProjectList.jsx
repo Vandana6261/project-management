@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigation } from "react-router-dom";
 import { Calendar, ArrowRight, UserPlus, FolderKanban, PlusSquare } from "lucide-react";
 import AddMemberModal from "./AddMemberModal";
 import AddTaskModal from "./AddTaskModal"; // Import the new modal
 import useProjectContext from "../context/ProjectContext";
 
 function ProjectList({ projects = [] }) {
-  const { setSelectedProject } = useProjectContext()
+  const { selectedProject, setSelectedProject } = useProjectContext()
   const [selectedProjectForMember, setSelectedProjectForMember] = useState(null);
   const [selectedProjectForTask, setSelectedProjectForTask] = useState(null);
+  const navigation = useNavigation();
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -47,6 +48,7 @@ function ProjectList({ projects = [] }) {
                 const normalizedRole = (role || "").toLowerCase();
                 const canAddMember = normalizedRole === "owner" || normalizedRole === "admin";
                 const canAddTask = normalizedRole === "owner" || normalizedRole === "admin";
+                const isOpening = navigation.state === "loading" && selectedProject === projectId;
 
                 return (
                   <div
@@ -118,10 +120,10 @@ function ProjectList({ projects = [] }) {
 
                       <Link
                         to={`/workspace/${projectId}`}
-                        onClick={() => setSelectedProject(projects.projectId)}
-                        className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primaryHover transition-colors cursor-pointer"
+                        onClick={() => setSelectedProject(projectId)}
+                        className={`flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primaryHover transition-colors cursor-pointer ${isOpening ? "pointer-events-none opacity-60" : ""} `}
                       >
-                        <span>Open Project</span>
+                        <span>{isOpening ? "Opening..." : "Open Project"}</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
