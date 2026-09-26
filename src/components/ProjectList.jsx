@@ -48,7 +48,7 @@ function ProjectList({ projects = [] }) {
                 const normalizedRole = (role || "").toLowerCase();
                 const canAddMember = normalizedRole === "owner" || normalizedRole === "admin";
                 const canAddTask = normalizedRole === "owner" || normalizedRole === "admin";
-                const isOpening = navigation.state === "loading" && selectedProject === projectId;
+                const isOpening = navigation.state === "loading" && (selectedProject?.id === projectId || selectedProject === projectId);
 
                 return (
                   <div
@@ -120,7 +120,7 @@ function ProjectList({ projects = [] }) {
 
                       <Link
                         to={`/workspace/${projectId}`}
-                        onClick={() => setSelectedProject(projectId)}
+                        onClick={() => setSelectedProject(targetProject)}
                         className={`flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primaryHover transition-colors cursor-pointer ${isOpening ? "pointer-events-none opacity-60" : ""} `}
                       >
                         <span>{isOpening ? "Opening..." : "Open Project"}</span>

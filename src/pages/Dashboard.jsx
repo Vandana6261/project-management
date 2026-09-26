@@ -9,7 +9,7 @@ import useProjectContext from "../context/ProjectContext";
 
 function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const { projects, loading, fetchProjects, tasks, fetchAssignedTasks } = useProjectContext();
+  const { projects, loading, hasFetched, fetchProjects, tasks, fetchAssignedTasks } = useProjectContext();
   // const projects = []
 
   useEffect(() => {
@@ -44,8 +44,10 @@ function Dashboard() {
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          {loading ? (
-            <div className="p-6 text-center text-xs text-muted">Loading projects...</div>
+          {!hasFetched && projects.length === 0 ? (
+            <div className="p-10 text-center text-xs text-muted border border-dashed border-cardBorder rounded-2xl bg-card">
+              Loading projects...
+            </div>
           ) : (
             <ProjectList projects={projects} />
           )}

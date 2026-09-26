@@ -1,41 +1,48 @@
-import React, { createContext, useState, useContext, useCallback } from "react";
+import React, { createContext, useState, useContext, useCallback, useRef } from "react";
 import { cusApi } from "../services/customFetch";
 
 const ProjectContext = createContext();
 
 export const ProjectProvider = ({ children }) => {
-  
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hasFetched, setHasFetched] = useState(false); // Cache flag
+  const [hasFetched, setHasFetched] = useState(false); // Cache flag for UI
   const [tasks, setTasks] = useState([]);
+  const [tasksLoading, setTasksLoading] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [projectLoading, setProjectLoading] = useState(false);
 
   const [isWorkSpaceSidebarOpen, setIsWorkSpaceSidebarOpen] = useState(false);
 
+  // Synchronous cache flags that persist across re-renders
+  const hasFetchedProjectsRef = useRef(false);
+  const hasFetchedTasksRef = useRef(false);
 
   // Memoized fetch function so it can be safely used in useEffects
   const fetchProjects = useCallback(async (forceRefresh = false) => {
     // Avoid re-fetching if data is already fetched (unless explicitly forced)
-    if (hasFetched && !forceRefresh) return;
+    if (hasFetchedProjectsRef.current && !forceRefresh) return;
 
     setLoading(true);
     try {
       const response = await cusApi.get("project/get-project");
       const data = await response.json();
       setProjects(data.project || []);
+      hasFetchedProjectsRef.current = true;
       setHasFetched(true);
     } catch (error) {
       console.error("Failed to fetch projects:", error);
     } finally {
       setLoading(false);
     }
-  }, [hasFetched]);
+  }, []);
 
   // Helper to add or invalidate projects after creating a new one
-  const refreshProjects = () => fetchProjects(true);
+  const refreshProjects = useCallback(() => {
+    hasFetchedProjectsRef.current = false;
+    return fetchProjects(true);
+  }, [fetchProjects]);
 
   // Fetch single project details by ID (used when landing directly on a route)
   const fetchProjectById = useCallback(async (id) => {
@@ -54,7 +61,6 @@ export const ProjectProvider = ({ children }) => {
     }
   }, []);
 
-
   // Set selected project ID and sync selected project object
   const handleSetSelectedProjectId = useCallback((id) => {
     setSelectedProjectId(id);
@@ -72,29 +78,33 @@ export const ProjectProvider = ({ children }) => {
     }
   }, [projects, fetchProjectById]);
 
+  const fetchAssignedTasks = useCallback(async (forceRefresh = false) => {
+    // Avoid re-fetching assigned tasks if already fetched
+    if (hasFetchedTasksRef.current && !forceRefresh) return;
 
-  const fetchAssignedTasks = useCallback(async () => {
-    setLoading(true);
+    setTasksLoading(true);
     try {
       const response = await cusApi.get("project/task/assigned-task");
       const result = await response.json();
-      setTasks(result.data);
+      setTasks(result.data || []);
+      hasFetchedTasksRef.current = true;
     } catch (error) {
       console.error("Failed to fetch tasks", error);
     } finally {
-      setLoading(false);
+      setTasksLoading(false);
     }
   }, []);
-
 
   return (
     <ProjectContext.Provider
       value={{
         projects,
         loading,
+        hasFetched,
+        tasks,
+        tasksLoading,
         fetchProjects,
         refreshProjects,
-        tasks,
         fetchAssignedTasks,
         selectedProject,
         setSelectedProject,
@@ -102,8 +112,8 @@ export const ProjectProvider = ({ children }) => {
         setSelectedProjectId: handleSetSelectedProjectId,
         projectLoading,
         isWorkSpaceSidebarOpen,
-        setIsWorkSpaceSidebarOpen
-
+        setIsWorkSpaceSidebarOpen,
+        fetchProjectById
       }}
     >
       {children}
