@@ -1,5 +1,4 @@
 
-// src/pages/layout/WorkspaceLayout.jsx
 import React, { useEffect } from "react";
 import { useParams, Outlet, NavLink, Link } from "react-router-dom";
 import {
@@ -14,14 +13,17 @@ import useProjectContext from "../../context/ProjectContext";
 
 function WorkspaceLayout() {
   const { projectId } = useParams();
-  const { setSelectedProjectId, selectedProject, projectLoading, isWorkSpaceSidebarOpen, setIsWorkSpaceSidebarOpen } = useProjectContext();
+  const { setSelectedProjectId, selectedProject, projectLoading, isWorkSpaceSidebarOpen, setIsWorkSpaceSidebarOpen, fetchProjectById } = useProjectContext();
 
   // Sync selected project ID on route change or initial load
   useEffect(() => {
     if (projectId) {
       setSelectedProjectId(projectId);
+      fetchProjectById(projectId);
     } 
   }, [projectId, setSelectedProjectId]);
+
+  // fetchProjectById(projectId)
 
   const navItems = [
     {
