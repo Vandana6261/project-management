@@ -10,8 +10,6 @@ export const ProjectProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [tasksLoading, setTasksLoading] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [projectLoading, setProjectLoading] = useState(false);
 
   const [isWorkSpaceSidebarOpen, setIsWorkSpaceSidebarOpen] = useState(false);
 
@@ -44,39 +42,20 @@ export const ProjectProvider = ({ children }) => {
     return fetchProjects(true);
   }, [fetchProjects]);
 
-  // Fetch single project details by ID (used when landing directly on a route)
+  // Fetch single project details by ID (can be used on-demand to refresh project state)
   const fetchProjectById = useCallback(async (id) => {
     if (!id) return;
-    setProjectLoading(true);
     try {
       const response = await cusApi.get(`project/${id}`);
       const result = await response.json();
       if (result.success) {
         setSelectedProject(result.data);
+        return result.data;
       }
     } catch (error) {
       console.error("Failed to fetch project details:", error);
-    } finally {
-      setProjectLoading(false);
     }
   }, []);
-
-  // Set selected project ID and sync selected project object
-  const handleSetSelectedProjectId = useCallback((id) => {
-    setSelectedProjectId(id);
-    
-    // Check if we already have it in state list
-    const found = projects.find(
-      (item) => (item.project?.id || item.id) === id
-    );
-
-    if (found) {
-      setSelectedProject(found.project || found);
-    } else {
-      // If refreshed directly via URL, fetch from API
-      fetchProjectById(id);
-    }
-  }, [projects, fetchProjectById]);
 
   const fetchAssignedTasks = useCallback(async (forceRefresh = false) => {
     // Avoid re-fetching assigned tasks if already fetched
@@ -108,12 +87,9 @@ export const ProjectProvider = ({ children }) => {
         fetchAssignedTasks,
         selectedProject,
         setSelectedProject,
-        selectedProjectId,
-        setSelectedProjectId: handleSetSelectedProjectId,
-        projectLoading,
+        fetchProjectById,
         isWorkSpaceSidebarOpen,
         setIsWorkSpaceSidebarOpen,
-        fetchProjectById
       }}
     >
       {children}

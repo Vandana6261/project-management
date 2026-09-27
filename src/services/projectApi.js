@@ -12,9 +12,23 @@ export const createProject = async (projectData) => {
     return await res.json();
 }
 
+const projectCache = new Map();
+
+export const invalidateProjectCache = (projectId) => {
+    if (projectId) {
+        projectCache.delete(projectId);
+    } else {
+        projectCache.clear();
+    }
+};
+
 export const addMemberInProject = async (data) => {
     const res = await cusApi.post('project/add-member', data);
-    return await res.json();
+    const result = await res.json();
+    if (result?.success && data?.projectId) {
+        invalidateProjectCache(data.projectId);
+    }
+    return result;
 }
 
 export const getProjectMembers = async (projectId) => {
@@ -29,10 +43,21 @@ export const getTaskOptions = async () => {
 
 export const addTaskInProject = async (payload) => {
     const res = await cusApi.post('project/task/create', payload);
-    return await res.json();
+    const result = await res.json();
+    if (result?.success && payload?.projectId) {
+        invalidateProjectCache(payload.projectId);
+    }
+    return result;
 }
 
-export const getProjectInfo = async (projectId) => {
+export const getProjectInfo = async (projectId, forceRefresh = false) => {
+    if (!forceRefresh && projectCache.has(projectId)) {
+        return projectCache.get(projectId);
+    }
     const res = await cusApi.get(`project/${projectId}`);
-    return await res.json();
+    const data = await res.json();
+    if (data?.success) {
+        projectCache.set(projectId, data);
+    }
+    return data;
 }

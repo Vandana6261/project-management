@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import React from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { getProjectInfo } from '../services/projectApi';
 
 export const getProjectDataLoader = async ({ params }) => {
@@ -9,8 +9,16 @@ export const getProjectDataLoader = async ({ params }) => {
 };
 
 function ProjectOverview() {
-  const result = useLoaderData();
-  const [projectData] = useState(result.data);
+  const context = useOutletContext();
+  const projectData = context?.projectData || context?.project;
+
+  if (!projectData) {
+    return (
+      <div className="min-h-screen bg-[var(--color-page)] flex items-center justify-center text-xs text-[var(--color-muted)]">
+        Loading project details...
+      </div>
+    );
+  }
 
   // Helper function to format dates nicely
   const formatDate = (dateString) => {

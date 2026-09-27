@@ -1,6 +1,6 @@
 
 import React, { useEffect } from "react";
-import { useParams, Outlet, NavLink, Link } from "react-router-dom";
+import { useParams, Outlet, NavLink, Link, useLoaderData } from "react-router-dom";
 import {
   LayoutDashboard,
   CheckSquare,
@@ -13,17 +13,19 @@ import useProjectContext from "../../context/ProjectContext";
 
 function WorkspaceLayout() {
   const { projectId } = useParams();
-  const { setSelectedProjectId, selectedProject, projectLoading, isWorkSpaceSidebarOpen, setIsWorkSpaceSidebarOpen, fetchProjectById } = useProjectContext();
+  const loaderData = useLoaderData();
+  const currentProject = loaderData?.data || loaderData;
 
-  // Sync selected project ID on route change or initial load
+  const { selectedProject, setSelectedProject, isWorkSpaceSidebarOpen, setIsWorkSpaceSidebarOpen } = useProjectContext();
+
+  // Sync selected project object into context
   useEffect(() => {
-    if (projectId) {
-      setSelectedProjectId(projectId);
-      fetchProjectById(projectId);
-    } 
-  }, [projectId, setSelectedProjectId]);
+    if (currentProject) {
+      setSelectedProject(currentProject);
+    }
+  }, [currentProject, setSelectedProject]);
 
-  // fetchProjectById(projectId)
+  const activeProject = currentProject || selectedProject;
 
   const navItems = [
     {
@@ -77,7 +79,7 @@ function WorkspaceLayout() {
                 Back to Dashboard
               </Link>
               <h2 className="text-sm font-black text-title truncate">
-                {projectLoading ? "Loading..." : selectedProject?.name || "Project Workspace"}
+                {activeProject?.name || "Project Workspace"}
               </h2>
             </div>
 
@@ -115,19 +117,19 @@ function WorkspaceLayout() {
           </nav>
 
           {/* Project Status Footer Badge */}
-          {selectedProject && (
+          {activeProject && (
             <div className="p-4 border-t border-cardBorder">
               <div className="p-3 rounded-xl bg-inputBg border border-inputBorder text-[11px] space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-muted">Status:</span>
                   <span className="font-bold text-title uppercase text-[10px] px-2 py-0.5 rounded bg-card border border-cardBorder">
-                    {selectedProject.status || "ACTIVE"}
+                    {activeProject.status || "ACTIVE"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted">Priority:</span>
                   <span className="font-bold text-secondary uppercase text-[10px]">
-                    {selectedProject.priority || "NORMAL"}
+                    {activeProject.priority || "NORMAL"}
                   </span>
                 </div>
               </div>
@@ -138,7 +140,7 @@ function WorkspaceLayout() {
 
       {/* Main Content Area - Pushed right on desktop to accommodate the 64px (w-64) sidebar */}
       <main className="flex-1 lg:ml-64 p-4 sm:p-6 max-w-7xl w-full overflow-x-hidden">
-        <Outlet />
+        <Outlet context={{ project: activeProject, projectData: activeProject }} />
       </main>
     </div>
   );

@@ -58,8 +58,9 @@ function App() {
         {
           path: "workspace/:projectId",
           element: <WorkspaceLayout />,
+          loader: getProjectDataLoader,
           children: [
-            { index: true, element: <ProjectOverview />, loader: getProjectDataLoader },
+            { index: true, element: <ProjectOverview /> },
             { path: "tasks", element: <ProjectTasks /> },
             { path: "my-tasks", element: <UserProjectTasks /> },
             { path: "chatbot", element: <ProjectChatbot /> },
