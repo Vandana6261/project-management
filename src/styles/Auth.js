@@ -12,6 +12,9 @@ const passWordInput = `flex items-center w-full bg-inputBg backdrop-blur-xl roun
 const passWordInnerInput = `flex-1 bg-transparent py-3 px-4 text-sm font-medium tracking-wide text-title placeholder-placeholder/50 focus:outline-none`;
 
 // Premium, high-contrast structural CTA buttons
-const submitButton = `w-full mt-4 rounded-xl bg-primary py-3.5 text-xs uppercase font-extrabold tracking-widest text-white shadow-lg shadow-primary/15 hover:bg-primaryHover hover:shadow-primary/25 active:scale-[0.985] transition-all duration-200 cursor-pointer`;
+const submitButton = `w-full mt-4 rounded-xl bg-primary py-3.5 text-xs uppercase font-extrabold tracking-widest text-white shadow-lg shadow-primary/15 hover:bg-primaryHover hover:shadow-primary/25 active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none`;
 
-export { inputBase, label, passWordInput, passWordInnerInput, submitButton };
+// Reusable alert / error notification banner
+const errorMessage = `p-3 rounded-xl bg-alert/10 border border-alert/20 text-alert text-xs font-semibold flex items-center gap-2 animate-fadeIn`;
+
+export { inputBase, label, passWordInput, passWordInnerInput, submitButton, errorMessage };

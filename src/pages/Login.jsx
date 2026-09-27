@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { inputBase, label, passWordInput, passWordInnerInput, submitButton } from "../styles/Auth";
+import { inputBase, label, passWordInput, passWordInnerInput, submitButton, errorMessage } from "../styles/Auth";
 import { login } from "../services/Auth";
 import { useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
@@ -9,34 +9,35 @@ function Login() {
 
   const [formData, setFormData] = useState({email: "", password: ""});
   const [showPassword, setShowPassword] = useState(false);
-  const [resError, setResError] = useState({});
+  const [resError, setResError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
 
   const handleChange = (e) => {
-    setResError({});
+    setResError("");
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setResError({});
+    e.preventDefault();
+    if (isLoading) return;
+    setResError("");
     setIsLoading(true);
 
     try {
       const loginRes = await login(formData);
-      console.log(loginRes)
-      if(!loginRes.success) {
-        setResError(loginRes.message);
+      if (!loginRes || !loginRes.success) {
+        setResError(loginRes?.message || "Invalid credentials. Please try again.");
         return;
       }
       setFormData({email: "", password: ""});
       setUser(loginRes.username);
       navigate("/dashboard");
     } catch (error) {
-      console.log(error)
+      console.error(error);
+      setResError("Unable to connect to the server. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -66,12 +67,6 @@ function Login() {
           <label htmlFor="password" className={label}>
             Password
           </label>
-          {/* <a 
-            href="#forgot" 
-            className="text-[10px] uppercase font-bold tracking-wider text-secondary hover:text-secondaryHover transition-colors"
-          >
-            Forgot?
-          </a> */}
         </div>
         
         <div className={passWordInput}>
@@ -94,9 +89,17 @@ function Login() {
         </div>
       </div>
 
+      {/* Error Feedback */}
+      {resError && (
+        <div className={errorMessage}>
+          <span>⚠️</span>
+          <span>{typeof resError === "string" ? resError : resError.message || "Invalid credentials"}</span>
+        </div>
+      )}
+
       {/* Action Button */}
-      <button type="submit" className={submitButton}>
-        {isLoading ? "Progressing..." : "Sign In to Account"}
+      <button type="submit" className={submitButton} disabled={isLoading}>
+        {isLoading ? "Logging in..." : "Sign In to Account"}
       </button>
     </form>
   );

@@ -25,6 +25,12 @@ function WorkspaceLayout() {
     }
   }, [currentProject, setSelectedProject]);
 
+  // Ensure mobile sidebar is closed when entering or leaving the workspace usingmobile back arrow button, normal onClick won't work for that
+  useEffect(() => {
+    setIsWorkSpaceSidebarOpen(false);
+    return () => setIsWorkSpaceSidebarOpen(false);
+  }, [projectId, setIsWorkSpaceSidebarOpen]);
+
   const activeProject = currentProject || selectedProject;
 
   const navItems = [
@@ -73,6 +79,7 @@ function WorkspaceLayout() {
             <div>
               <Link
                 to="/dashboard"
+                onClick={() => setIsWorkSpaceSidebarOpen(false)}
                 className="inline-flex items-center gap-1.5 text-[11px] font-bold text-primary hover:text-primaryHover mb-2 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
