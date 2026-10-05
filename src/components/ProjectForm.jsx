@@ -46,21 +46,21 @@ function ProjectForm({ onSuccess }) {
     if (inputError[name]) {
       setInputError((prev) => ({ ...prev, [name]: "" }));
     }
+    if (name === "startDate" && inputError.dueDate) {
+      setInputError((prev) => ({ ...prev, dueDate: "" }));
+    }
   };
   const validateForm = () => {
     let localErrors = {};
-    const todayStr = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
 
     if (!formData.name.trim()) localErrors.name = "Project name is required.";
     if (!formData.description.trim()) localErrors.description = "Description is required.";
     if (!formData.status) localErrors.status = "Please select a status context.";
     if (!formData.priority) localErrors.priority = "Please assign a priority layer.";
     
-    // Start date check: Must be present or future
+    // Start date check: Can be any date (past, present, or future)
     if (!formData.startDate) {
       localErrors.startDate = "Start date is required.";
-    } else if (formData.startDate < todayStr) {
-      localErrors.startDate = "Start date must be today or in the future.";
     }
 
     // Due date check: Optional, but if present must be greater than start date
@@ -79,7 +79,12 @@ function ProjectForm({ onSuccess }) {
     setIsSubmitting(true);
 
     try {
-      const res = await createProject(formData);
+      const payload = {
+        ...formData,
+        startDate: formData.startDate || undefined,
+        dueDate: formData.dueDate || undefined,
+      };
+      const res = await createProject(payload);
       if (!res.success) {
         setResError({ message: res.message });
         return;
@@ -220,6 +225,7 @@ function ProjectForm({ onSuccess }) {
               id="dueDate"
               name="dueDate"
               value={formData.dueDate}
+              min={formData.startDate || undefined}
               onChange={handleChange}
               className={inputBaseClass}
             />
