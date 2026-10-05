@@ -63,7 +63,7 @@ function Dashboard() {
       {/* Modal Container for Project Form */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-xl">
+          <div className="relative w-full max-w-xl animate-scale-in">
             <button
               onClick={() => setShowCreateModal(false)}
               className="absolute top-4 right-4 z-10 text-muted hover:text-title text-sm font-bold p-2 cursor-pointer"

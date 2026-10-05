@@ -81,7 +81,7 @@ function AddMemberModal({ project, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-md rounded-2xl bg-card border border-cardBorder p-6 shadow-2xl">
+      <div className="relative w-full max-w-md rounded-2xl bg-card border border-cardBorder p-6 shadow-2xl animate-scale-in">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-muted hover:text-title p-1 transition-colors"

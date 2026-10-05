@@ -165,7 +165,7 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-lg rounded-2xl bg-card border border-cardBorder p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-lg rounded-2xl bg-card border border-cardBorder p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-scale-in">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-muted hover:text-title p-1 transition-colors"
@@ -278,7 +278,7 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
 
             {/* Filtered Dropdown Options */}
             {isDropdownOpen && (
-              <div className="absolute left-0 right-0 mt-1 max-h-40 overflow-y-auto rounded-xl bg-card border border-cardBorder shadow-xl z-20">
+              <div className="absolute left-0 right-0 mt-1 max-h-40 overflow-y-auto rounded-xl bg-card border border-cardBorder shadow-xl z-20 animate-slide-down">
                 {memberToShow.length > 0 ? (
                   memberToShow.map((member) => {
                     const memberId = member.id || member;
