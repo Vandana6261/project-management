@@ -37,18 +37,18 @@ function WorkspaceLayout() {
     {
       name: "Overview",
       path: `/workspace/${projectId}`,
-      icon: <LayoutDashboard className="w-4 h-4" />, 
+      icon: <LayoutDashboard className="w-4 h-4" />,
       exact: true,
     },
     {
       name: "All Tasks",
       path: `/workspace/${projectId}/tasks`,
-      icon: <CheckSquare className="w-4 h-4" />, 
+      icon: <CheckSquare className="w-4 h-4" />,
     },
     {
       name: "Assigned to Me",
       path: `/workspace/${projectId}/my-tasks`,
-      icon: <UserCheck className="w-4 h-4" />, 
+      icon: <UserCheck className="w-4 h-4" />,
     },
     {
       name: "AI Assistant",
@@ -69,9 +69,8 @@ function WorkspaceLayout() {
 
       {/* Workspace Left Sidebar - starts from top-0 spanning full screen */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-card border-r border-cardBorder transition-transform duration-300 ease-in-out flex flex-col justify-between shrink-0 ${
-          isWorkSpaceSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-card border-r border-cardBorder transition-transform duration-300 ease-in-out flex flex-col justify-between shrink-0 ${isWorkSpaceSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Header & Back Link */}
@@ -110,10 +109,9 @@ function WorkspaceLayout() {
                 end={item.exact}
                 onClick={() => setIsWorkSpaceSidebarOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${
-                    isActive
-                      ? "bg-primary text-white shadow-md shadow-primary/20"
-                      : "text-muted hover:text-title hover:bg-inputBg"
+                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${isActive
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "text-muted hover:text-title hover:bg-inputBg"
                   }`
                 }
               >
