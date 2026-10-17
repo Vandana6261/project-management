@@ -16,7 +16,7 @@ import {
 const initialFormState = {
   title: "",
   description: "",
-  status: "TODO",
+  status: "BACKLOG",
   priority: "MEDIUM",
   startDate: "",
   dueDate: "",
@@ -146,14 +146,12 @@ function AddTaskModal({ project, onClose, onTaskAdded }) {
     };
 
     try {
-      // console.log(payload);
       const response = await addTaskInProject(payload);
-      // if (onTaskAdded) onTaskAdded(response);
-      // console.log(response, "add Task Result");
       if (!response.success) {
         setResError({ message: response.message });
         return;
       }
+      if (onTaskAdded) onTaskAdded(response);
       setFormData(initialFormState);
       onClose();
     } catch (err) {

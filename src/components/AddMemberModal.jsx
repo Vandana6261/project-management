@@ -1,19 +1,18 @@
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { UserPlus, X, Mail, Shield } from "lucide-react";
 import { addMemberInProject, getOptions } from "../services/projectApi";
 
-function AddMemberModal({ project, onClose }) {
+function AddMemberModal({ project, onClose, onMemberAdded }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [roleOptions, setRoleOptions] = useState([]);
   const [formData, setFormData] = useState({
-    projectId: project.id,
+    projectId: project?.id || "",
     email: "",
     role: roleOptions[0] || "",
   });
   const [resError, setResError] = useState({});
   const [inputError, setInputError] = useState({});
-
 
   const handleChange = (e) => {
     setResError({});
@@ -22,14 +21,14 @@ function AddMemberModal({ project, onClose }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear validation error dynamically when the field is updated
     if (inputError[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setInputError((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(!formData.email || !formData.role) {
-      setInputError.message = "Please fill all of the field"
+    if (!formData.email || !formData.role) {
+      setInputError({ message: "Please fill all of the fields" });
       return;
     }
     setIsSubmitting(true);
@@ -45,10 +44,13 @@ function AddMemberModal({ project, onClose }) {
       console.log(response);
       
       setFormData({
-        projectId: project.id,
+        projectId: project?.id || "",
         email: "",
         role: roleOptions[0] || "",
       });
+      if (onMemberAdded) {
+        onMemberAdded(response);
+      }
       onClose();
     } catch (err) {
       console.error(err);

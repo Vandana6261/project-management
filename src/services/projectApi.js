@@ -61,3 +61,17 @@ export const getProjectInfo = async (projectId, forceRefresh = false) => {
     }
     return data;
 }
+
+export const getTaskById = async (taskId) => {
+    const res = await cusApi.get(`project/task/${taskId}`);
+    return await res.json();
+}
+
+export const updateTask = async (taskId, updateData, projectId) => {
+    const res = await cusApi.patch(`project/task/${taskId}`, updateData);
+    const result = await res.json();
+    if (result?.success && projectId) {
+        invalidateProjectCache(projectId);
+    }
+    return result;
+}

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 
 function MyTasks({ tasks = [] }) {
   // Track which task IDs or indices are currently expanded
@@ -26,7 +28,7 @@ function MyTasks({ tasks = [] }) {
             // Handles both structures: direct task object OR wrapped inside { task: { ... } }
             const task = item.task || item;
             const isExpanded = !!expandedTasks[index];
-
+            const pId = task.projectId || task.project?.id;
             return (
               <div
                 key={index}
@@ -35,7 +37,19 @@ function MyTasks({ tasks = [] }) {
                 {/* Main Row / Brief Info */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-medium text-title">{task.title}</span>
+                    {pId && task.id ? (
+                      <Link
+                        to={`/workspace/${pId}/tasks/${task.id}`}
+                        className="text-xs font-semibold text-title hover:text-primary transition-colors truncate max-w-xs block"
+                        title={task.title}
+                      >
+                        {task.title}
+                      </Link>
+                    ) : (
+                      <span className="text-xs font-medium text-title truncate max-w-xs block" title={task.title}>
+                        {task.title}
+                      </span>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-2">
@@ -58,9 +72,20 @@ function MyTasks({ tasks = [] }) {
                     <p><strong className="text-title">Project:</strong> {task.project?.name}</p>
                     <p><strong className="text-title">Status:</strong> {task.status}</p>
                     <div className="flex justify-between text-[10px] text-muted pt-1">
-                      <span>Start: {new Date(task.startDate).toLocaleDateString()}</span>
-                      <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
+                      <span>Start: {task.startDate ? new Date(task.startDate).toLocaleDateString() : 'N/A'}</span>
+                      <span>Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</span>
                     </div>
+                    {pId && task.id && (
+                      <div className="pt-2">
+                        <Link
+                          to={`/workspace/${pId}/tasks/${task.id}`}
+                          className="inline-flex items-center gap-1.5 text-xs text-primary font-bold hover:underline"
+                        >
+                          <span>Open Full Task View</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

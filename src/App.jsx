@@ -16,15 +16,12 @@ import AppLayout from './pages/layout/AppLayout'
 import { ProjectProvider } from './context/ProjectContext'
 import WorkspaceLayout from './pages/layout/WorkspaceLayout'
 import ProjectOverview, { getProjectDataLoader } from './components/ProjectOverview'
-
-
+import ProjectTasksPage from './pages/ProjectTasksPage'
+import TaskDetailPage from './pages/TaskDetailPage'
 
 const TasksPage = () => <div className="text-title font-bold text-xl">Tasks Workspace</div>;
 const ChatbotPage = () => <div className="text-title font-bold text-xl">AI Assistant Engine</div>;
 const NotificationsPage = () => <div className="text-title font-bold text-xl">Activity Notifications</div>;
-
-const ProjectTasks = () => <div className="text-title font-bold text-xl">All Project Tasks</div>;
-const UserProjectTasks = () => <div className="text-title font-bold text-xl">My Assigned Project Tasks</div>;
 const ProjectChatbot = () => <div className="text-title font-bold text-xl">Project AI Assistant</div>;
 
 function App() {
@@ -61,8 +58,9 @@ function App() {
           loader: getProjectDataLoader,
           children: [
             { index: true, element: <ProjectOverview /> },
-            { path: "tasks", element: <ProjectTasks /> },
-            { path: "my-tasks", element: <UserProjectTasks /> },
+            { path: "tasks", element: <ProjectTasksPage /> },
+            { path: "tasks/:taskId", element: <TaskDetailPage /> },
+            { path: "my-tasks", element: <ProjectTasksPage filterAssignedOnly={true} /> },
             { path: "chatbot", element: <ProjectChatbot /> },
           ],
         },
