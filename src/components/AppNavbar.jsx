@@ -1,17 +1,38 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import useAuthContext from "../context/AuthContext";
 import useThemeContext from "../context/ThemeContext";
-import { Menu } from "lucide-react";
+import { Menu, LogOut, ChevronDown } from "lucide-react";
 import useProjectContext from "../context/ProjectContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function AppNavbar({ }) {
-  const { user } = useAuthContext();
+  const { user, userEmail, logout } = useAuthContext();
   const { isThemeLight, toggleTheme } = useThemeContext();
   const { isWorkSpaceSidebarOpen, setIsWorkSpaceSidebarOpen } = useProjectContext();
 
   const location = useLocation();
+  const navigate = useNavigate();
   const isWorkspace = location.pathname.startsWith("/workspace");
+
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    setIsProfileOpen(false);
+    await logout();
+    navigate("/");
+  };
 
   return (
     <header className="sticky top-0 z-30 h-16 border-b border-cardBorder bg-page/80 backdrop-blur-md px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 transition-colors duration-300">
@@ -50,9 +71,47 @@ function AppNavbar({ }) {
           )}
         </button>
 
-        {/* User Pill */}
-        <div className="px-3 py-1.5 rounded-xl border border-cardBorder bg-card text-xs font-bold text-title">
-          {user ? user : "Guest"}
+        {/* User Profile Dropdown */}
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-cardBorder bg-card hover:bg-inputBg text-xs font-bold text-title transition-all cursor-pointer select-none"
+          >
+            <div className="h-6 w-6 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-[10px] font-black shrink-0">
+              {user ? user.charAt(0).toUpperCase() : "G"}
+            </div>
+            <span className="hidden sm:inline">{user || "Guest"}</span>
+            <ChevronDown className={`w-3.5 h-3.5 text-muted transition-transform duration-200 ${isProfileOpen ? "rotate-180" : ""}`} />
+          </button>
+
+          {/* Dropdown Panel */}
+          {isProfileOpen && (
+            <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-cardBorder bg-card shadow-xl shadow-title/5 backdrop-blur-2xl overflow-hidden z-50 animate-fadeIn">
+              {/* User Info */}
+              <div className="p-4 border-b border-cardBorder">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm font-black shrink-0">
+                    {user ? user.charAt(0).toUpperCase() : "G"}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-title truncate">@{user}</p>
+                    <p className="text-[11px] text-muted truncate">{userEmail || "No email"}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Logout Action */}
+              <div className="p-2">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-alert hover:bg-alert/10 transition-all cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>

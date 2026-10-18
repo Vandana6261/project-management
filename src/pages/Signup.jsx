@@ -21,7 +21,7 @@ function Signup() {
     otp: "",
   };
 
-  const {setUser} = useAuthContext();
+  const { setUser, setUserEmail } = useAuthContext();
   const [formData, setFormData] = useState(initialForm);
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -107,6 +107,7 @@ function Signup() {
 
         setFormData(initialForm);
         setUser(registerResponse.username);
+        setUserEmail(registerResponse.email);
         navigate("/dashboard");
       }
     } catch (error) {

@@ -19,7 +19,7 @@ export async function requestOtp(email) {
 }
 
 
-export async function varifyOtp({email, otp}) {
+export async function varifyOtp({ email, otp }) {
   try {
     const res = await fetch(`${BASE_URL}/api/auth/verify-otp`, {
       method: "POST",
@@ -68,5 +68,19 @@ export async function login(userData) {
     return data;
   } catch (error) {
     console.log(error.message);
+  }
+}
+
+export async function logoutUser() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Logout error:", error);
+    return { success: false, message: "Logout failed" };
   }
 }

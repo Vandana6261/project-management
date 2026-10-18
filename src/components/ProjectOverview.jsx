@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { useOutletContext, Link } from 'react-router-dom';
-import { UserPlus, PlusSquare } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import { UserPlus } from 'lucide-react';
 import { getProjectInfo, invalidateProjectCache } from '../services/projectApi';
 import useAuthContext from '../context/AuthContext';
 import useProjectContext from '../context/ProjectContext';
 import AddMemberModal from './AddMemberModal';
-import AddTaskModal from './AddTaskModal';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const getProjectDataLoader = async ({ params }) => {
@@ -20,7 +19,6 @@ function ProjectOverview() {
 
   const [refreshedProject, setRefreshedProject] = useState(null);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
-  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 
   const { user } = useAuthContext();
   const { projects, setSelectedProject } = useProjectContext();
@@ -81,11 +79,6 @@ function ProjectOverview() {
   const handleMemberAdded = async () => {
     await handleRefreshProject();
     setIsAddMemberModalOpen(false);
-  };
-
-  const handleTaskAdded = async () => {
-    await handleRefreshProject();
-    setIsAddTaskModalOpen(false);
   };
 
   if (!projectData) {
@@ -185,47 +178,11 @@ function ProjectOverview() {
                 </div>
               </div>
 
-              {/* Owner / Admin Action Buttons in Header */}
-              {isOwnerOrAdmin && (
-                <div className="flex sm:flex-col gap-2">
-                  <button
-                    onClick={() => setIsAddMemberModalOpen(true)}
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primaryHover)] text-white text-xs font-bold shadow-sm shadow-[var(--color-primary)]/20 transition-all cursor-pointer"
-                    title="Add Member to Project"
-                  >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    <span>Add Member</span>
-                  </button>
-                  <button
-                    onClick={() => setIsAddTaskModalOpen(true)}
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-secondary)]/10 hover:bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] border border-[var(--color-secondary)]/20 text-xs font-bold transition-all cursor-pointer"
-                    title="Add Task to Project"
-                  >
-                    <PlusSquare className="w-3.5 h-3.5" />
-                    <span>Add Task</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Grid Content: Members & Tasks */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Members Column */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold text-[var(--color-title)]">Team Members</h3>
-                <span className="text-xs bg-[var(--color-card)] border border-[var(--color-cardBorder)] px-2.5 py-1 rounded-full text-[var(--color-muted)] font-medium">
-                  {projectData.members?.length || 0}
-                </span>
-              </div>
+              {/* Owner / Admin Action Button in Header */}
               {isOwnerOrAdmin && (
                 <button
                   onClick={() => setIsAddMemberModalOpen(true)}
-                  className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/20 transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primaryHover)] text-white text-xs font-bold shadow-sm shadow-[var(--color-primary)]/20 transition-all cursor-pointer self-start sm:self-center"
                   title="Add Member to Project"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
@@ -233,9 +190,37 @@ function ProjectOverview() {
                 </button>
               )}
             </div>
+          </div>
+        </div>
 
-            <div className="space-y-3">
-              {(projectData.members || []).map((member) => (
+        {/* Team Members Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-[var(--color-title)]">Team Members</h3>
+              <span className="text-xs bg-[var(--color-card)] border border-[var(--color-cardBorder)] px-2.5 py-1 rounded-full text-[var(--color-muted)] font-medium">
+                {projectData.members?.length || 0}
+              </span>
+            </div>
+            {isOwnerOrAdmin && (
+              <button
+                onClick={() => setIsAddMemberModalOpen(true)}
+                className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/20 transition-all cursor-pointer"
+                title="Add Member to Project"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Add Member</span>
+              </button>
+            )}
+          </div>
+
+          {(!projectData.members || projectData.members.length === 0) ? (
+            <div className="bg-[var(--color-card)] border border-[var(--color-cardBorder)] p-8 rounded-xl text-center text-[var(--color-muted)]">
+              No members added to this project yet.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {projectData.members.map((member) => (
                 <div
                   key={member.user?.id || member.id}
                   className="bg-[var(--color-card)] border border-[var(--color-cardBorder)] p-4 rounded-xl flex items-center justify-between shadow-sm hover:border-[var(--color-primary)]/40 transition-colors"
@@ -245,7 +230,7 @@ function ProjectOverview() {
                       {member.user?.fullName?.charAt(0) || 'U'}
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-[var(--color-title)]">{member.user?.fullName}</h4>
+                      <h4 className="text-sm font-semibold text-[var(--color-title)]">{member.user?.fullName || member.user?.username || 'Member'}</h4>
                       <p className="text-xs text-[var(--color-muted)]">@{member.user?.username}</p>
                     </div>
                   </div>
@@ -255,102 +240,7 @@ function ProjectOverview() {
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Tasks Column */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold text-[var(--color-title)]">Project Tasks</h3>
-                <span className="text-xs bg-[var(--color-card)] border border-[var(--color-cardBorder)] px-2.5 py-1 rounded-full text-[var(--color-muted)] font-medium">
-                  {projectData.tasks?.length || 0}
-                </span>
-              </div>
-              {isOwnerOrAdmin && (
-                <button
-                  onClick={() => setIsAddTaskModalOpen(true)}
-                  className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg bg-[var(--color-secondary)]/10 hover:bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] border border-[var(--color-secondary)]/20 transition-all cursor-pointer"
-                  title="Add Task to Project"
-                >
-                  <PlusSquare className="w-3.5 h-3.5" />
-                  <span>Add Task</span>
-                </button>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              {(!projectData.tasks || projectData.tasks.length === 0) ? (
-                <div className="bg-[var(--color-card)] border border-[var(--color-cardBorder)] p-8 rounded-xl text-center text-[var(--color-muted)] space-y-3">
-                  <p>No tasks available for this project yet.</p>
-                  {isOwnerOrAdmin && (
-                    <button
-                      onClick={() => setIsAddTaskModalOpen(true)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--color-secondary)]/10 hover:bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] border border-[var(--color-secondary)]/20 text-xs font-bold transition-all cursor-pointer"
-                    >
-                      <PlusSquare className="w-3.5 h-3.5" />
-                      <span>Create First Task</span>
-                    </button>
-                  )}
-                </div>
-              ) : (
-                projectData.tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className="bg-[var(--color-card)] border border-[var(--color-cardBorder)] p-5 rounded-xl space-y-4 shadow-sm hover:border-[var(--color-primary)]/40 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Link
-                            to={`/workspace/${projectData.id}/tasks/${task.id}`}
-                            className="text-base font-semibold text-[var(--color-title)] hover:text-[var(--color-primary)] transition-colors truncate block max-w-sm"
-                            title={task.title}
-                          >
-                            {task.title}
-                          </Link>
-                          <span className={`px-2 py-0.5 text-[10px] font-semibold rounded border ${getStatusBadge(task.status)}`}>
-                            {task.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-[var(--color-body)]">{task.description}</p>
-                      </div>
-                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded border ${getPriorityBadge(task.priority)}`}>
-                        {task.priority}
-                      </span>
-                    </div>
-
-                    {/* Task Footer Meta / Assignments */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-3 border-t border-[var(--color-cardBorder)] gap-3 text-xs">
-                      <div className="text-[var(--color-muted)]">
-                        Due: <span className="text-[var(--color-title)] font-medium">{formatDate(task.dueDate)}</span>
-                      </div>
-
-                      {/* Assigned Users */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-[var(--color-muted)]">Assigned to:</span>
-                        {(!task.assignments || task.assignments.length === 0) ? (
-                          <span className="text-[var(--color-placeholder)] italic">Unassigned</span>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            {task.assignments.map((assignment, index) => (
-                              <span
-                                key={index}
-                                className="inline-flex items-center gap-1 bg-[var(--color-inputBg)] border border-[var(--color-inputBorder)] px-2 py-0.5 rounded-md text-[var(--color-title)] font-medium text-xs"
-                              >
-                                <span className="w-2 h-2 rounded-full bg-[var(--color-primary)]"></span>
-                                {assignment.user?.fullName || assignment.user?.username || 'Member'}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
+          )}
         </div>
 
       </div>
@@ -361,15 +251,6 @@ function ProjectOverview() {
           project={projectData}
           onClose={() => setIsAddMemberModalOpen(false)}
           onMemberAdded={handleMemberAdded}
-        />
-      )}
-
-      {/* Add Task Modal */}
-      {isAddTaskModalOpen && (
-        <AddTaskModal
-          project={projectData}
-          onClose={() => setIsAddTaskModalOpen(false)}
-          onTaskAdded={handleTaskAdded}
         />
       )}
     </div>

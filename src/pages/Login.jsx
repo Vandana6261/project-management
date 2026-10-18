@@ -11,9 +11,9 @@ import { useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
 
 function Login() {
-  const {setUser} = useAuthContext();
+  const { setUser, setUserEmail } = useAuthContext();
 
-  const [formData, setFormData] = useState({email: "", password: ""});
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [resError, setResError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -38,8 +38,9 @@ function Login() {
         setResError(loginRes?.message || "Invalid credentials. Please try again.");
         return;
       }
-      setFormData({email: "", password: ""});
+      setFormData({ email: "", password: "" });
       setUser(loginRes.username);
+      setUserEmail(loginRes.email);
       navigate("/dashboard");
     } catch (error) {
       console.error(error);

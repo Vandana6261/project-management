@@ -1,16 +1,11 @@
-import { useState,useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-// import './App.css'
 import Auth from './pages/Auth'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import Layout from './pages/layout/Layout'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import useAuthContext from './context/AuthContext'
-import { me } from './utils/user'
 import ProtectedRoute from './routes/ProtectedRoute'
+import PublicRoute from './routes/PublicRoute'
 import AppLoader from './loaders/AppLoader'
 import AppLayout from './pages/layout/AppLayout'
 import { ProjectProvider } from './context/ProjectContext'
@@ -19,19 +14,20 @@ import ProjectOverview, { getProjectDataLoader } from './components/ProjectOverv
 import ProjectTasksPage from './pages/ProjectTasksPage'
 import TaskDetailPage from './pages/TaskDetailPage'
 
-const TasksPage = () => <div className="text-title font-bold text-xl">Tasks Workspace</div>;
-const ChatbotPage = () => <div className="text-title font-bold text-xl">AI Assistant Engine</div>;
-const NotificationsPage = () => <div className="text-title font-bold text-xl">Activity Notifications</div>;
 const ProjectChatbot = () => <div className="text-title font-bold text-xl">Project AI Assistant</div>;
 
 function App() {
   const { uLoading } = useAuthContext();
 
   const router = createBrowserRouter([
-    // Public Landing Routes
+    // Public Landing & Auth Routes (Redirects directly to /dashboard if user is logged in)
     {
       path: "/",
-      element: <Layout />,
+      element: (
+        <PublicRoute>
+          <Layout />
+        </PublicRoute>
+      ),
       children: [
         { index: true, element: <Home /> },
         { path: "auth", element: <Auth /> },
@@ -65,6 +61,10 @@ function App() {
           ],
         },
       ],
+    },
+    {
+      path: "*",
+      element: <Navigate to="/" replace />,
     },
   ]);
 
